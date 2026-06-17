@@ -138,88 +138,56 @@ function tokenizeWithRules(
 
 // ── Per-language entry points ─────────────────────────────────────
 
-function tokenizeTS(line: string): Token[] {
-  // Pre-scan for inline comments (don't tokenize past //)
-  const commentIdx = line.indexOf('//')
-  const code    = commentIdx >= 0 ? line.slice(0, commentIdx) : line
-  const comment = commentIdx >= 0 ? line.slice(commentIdx)    : ''
-
+function tokenizeTS(source: string): Token[] {
   const rules: LangRule[] = [
+    ['comment', /^\/\*[\s\S]*?\*\/|^\/\/.*/],
     ...COMMON_RULES,
     ['decorator', /^@[A-Za-z_][\w]*/],
     ['type',     /^[A-Z][A-Za-z0-9_]*(?=[\s<,>|&)\]])/],
     ['function', /^[a-z_$][a-zA-Z0-9_$]*(?=\s*\()/],
   ]
 
-  const tokens = tokenizeWithRules(code, rules, (word) => {
+  return tokenizeWithRules(source, rules, (word) => {
     if (TS_KEYWORDS.has(word)) return 'keyword'
     if (/^[A-Z]/.test(word))   return 'type'
     return 'plain'
   })
-
-  if (comment) tokens.push({ type: 'comment', value: comment })
-  return tokens
 }
 
-function tokenizePY(line: string): Token[] {
-  const commentIdx = line.indexOf('#')
-  // only treat # as comment if not inside a string (simple heuristic)
-  let code = line, comment = ''
-  if (commentIdx >= 0) {
-    const before = line.slice(0, commentIdx)
-    const quoteCount = (before.match(/"/g) || []).length + (before.match(/'/g) || []).length
-    if (quoteCount % 2 === 0) {
-      code    = before
-      comment = line.slice(commentIdx)
-    }
-  }
-
+function tokenizePY(source: string): Token[] {
   const rules: LangRule[] = [
-    ['comment', /^"""[\s\S]*?"""|^'''[\s\S]*?'''/],
+    ['comment', /^"""[\s\S]*?"""|^'''[\s\S]*?'''|^#.*/],
     ...COMMON_RULES,
     ['decorator', /^@[A-Za-z_][\w]*/],
     ['function', /^[a-z_][a-zA-Z0-9_]*(?=\s*\()/],
   ]
 
-  const tokens = tokenizeWithRules(code, rules, (word) => {
+  return tokenizeWithRules(source, rules, (word) => {
     if (PY_KEYWORDS.has(word)) return 'keyword'
     if (/^[A-Z]/.test(word))   return 'type'
     return 'plain'
   })
-
-  if (comment) tokens.push({ type: 'comment', value: comment })
-  return tokens
 }
 
-function tokenizePHP(line: string): Token[] {
-  const commentIdx = line.indexOf('//')
-  const code    = commentIdx >= 0 ? line.slice(0, commentIdx) : line
-  const comment = commentIdx >= 0 ? line.slice(commentIdx)    : ''
-
+function tokenizePHP(source: string): Token[] {
   const rules: LangRule[] = [
+    ['comment', /^\/\*[\s\S]*?\*\/|^\/\/.*|^\#.*/],
     ...COMMON_RULES,
     ['keyword', /^\$[A-Za-z_][\w]*/],  // variables
     ['function', /^[a-z_][a-zA-Z0-9_]*(?=\s*\()/],
     ['type',    /^[A-Z\\][A-Za-z0-9_\\]*/],
   ]
 
-  const tokens = tokenizeWithRules(code, rules, (word) => {
+  return tokenizeWithRules(source, rules, (word) => {
     if (PHP_KEYWORDS.has(word)) return 'keyword'
     if (/^[A-Z]/.test(word))   return 'type'
     return 'plain'
   })
-
-  if (comment) tokens.push({ type: 'comment', value: comment })
-  return tokens
 }
 
-function tokenizeCSS(line: string): Token[] {
-  const commentIdx = line.indexOf('//')
-  const code    = commentIdx >= 0 ? line.slice(0, commentIdx) : line
-  const comment = commentIdx >= 0 ? line.slice(commentIdx)    : ''
-
+function tokenizeCSS(source: string): Token[] {
   const rules: LangRule[] = [
-    ['comment', /^\/\*[\s\S]*?\*\//],
+    ['comment', /^\/\*[\s\S]*?\*\/|^\/\/.*/],
     ['string',  /^"[^"]*"|^'[^']*'/],
     ['number',  /^-?\d+\.?\d*(%|px|rem|em|vw|vh|fr|deg|s|ms)?/],
     ['keyword', /^@[a-z-]+/],
@@ -229,13 +197,10 @@ function tokenizeCSS(line: string): Token[] {
     ['tag',     /^[a-z][a-zA-Z0-9-]*(?=\s*[{,])/], // selectors
   ]
 
-  const tokens = tokenizeWithRules(code, rules, (word) => {
+  return tokenizeWithRules(source, rules, (word) => {
     if (CSS_KEYWORDS.has(word)) return 'keyword'
     return 'plain'
   })
-
-  if (comment) tokens.push({ type: 'comment', value: comment })
-  return tokens
 }
 
 function tokenizeHTML(line: string): Token[] {
@@ -324,14 +289,40 @@ function normalizeLanguage(lang: string): Language {
   return l as Language
 }
 
+function splitTokensIntoLines(tokens: Token[]): Token[][] {
+  const lines: Token[][] = [[]]
+  for (const token of tokens) {
+    if (token.value.includes('\n')) {
+      const parts = token.value.split('\n')
+      for (let j = 0; j < parts.length; j++) {
+        if (parts[j] !== '') {
+          lines[lines.length - 1].push({ type: token.type, value: parts[j] })
+        }
+        if (j < parts.length - 1) {
+          lines.push([])
+        }
+      }
+    } else {
+      lines[lines.length - 1].push(token)
+    }
+  }
+  return lines
+}
+
+export function tokenizeCode(code: string, lang: string): Token[][] {
+  const l = normalizeLanguage(lang)
+  let tokens: Token[]
+  switch (l) {
+    case 'python':  tokens = tokenizePY(code); break
+    case 'php':     tokens = tokenizePHP(code); break
+    case 'css':     tokens = tokenizeCSS(code); break
+    case 'html':    tokens = tokenizeHTML(code); break
+    default:        tokens = tokenizeTS(code); break
+  }
+  return splitTokensIntoLines(tokens)
+}
+
 /** Tokenize a single line given a language */
 export function tokenizeLine(line: string, lang: string): Token[] {
-  const l = normalizeLanguage(lang)
-  switch (l) {
-    case 'python':  return tokenizePY(line)
-    case 'php':     return tokenizePHP(line)
-    case 'css':     return tokenizeCSS(line)
-    case 'html':    return tokenizeHTML(line)
-    default:        return tokenizeTS(line)
-  }
+  return tokenizeCode(line, lang)[0] || []
 }

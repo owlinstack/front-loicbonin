@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { tokenizeLine, tokenColor } from '@/lib/highlight'
+import { tokenizeCode, tokenColor } from '@/lib/highlight'
 
 interface HighlightedCodeProps {
   code: string
@@ -20,10 +20,10 @@ export function HighlightedCode({
   lineNumbers = false,
   maxLines,
 }: HighlightedCodeProps) {
-  const lines = useMemo(() => {
-    const all = code.split('\n')
-    return maxLines ? all.slice(0, maxLines) : all
-  }, [code, maxLines])
+  const tokenizedLines = useMemo(() => {
+    const allLines = tokenizeCode(code, language)
+    return maxLines ? allLines.slice(0, maxLines) : allLines
+  }, [code, language, maxLines])
 
   const truncated = maxLines !== undefined && code.split('\n').length > maxLines
 
@@ -39,7 +39,7 @@ export function HighlightedCode({
         }}
       >
         <tbody>
-          {lines.map((line, idx) => (
+          {tokenizedLines.map((lineTokens, idx) => (
             <tr key={idx} style={{ verticalAlign: 'top' }}>
               {lineNumbers && (
                 <td
@@ -61,10 +61,10 @@ export function HighlightedCode({
                 </td>
               )}
               <td style={{ paddingLeft: lineNumbers ? 0 : undefined, whiteSpace: 'pre' }}>
-                {line === '' ? (
+                {lineTokens.length === 0 ? (
                   <span>&nbsp;</span>
                 ) : (
-                  tokenizeLine(line, language).map((tok, ti) => (
+                  lineTokens.map((tok, ti) => (
                     <span
                       key={ti}
                       style={{ color: tokenColor(tok.type, theme) }}
