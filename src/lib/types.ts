@@ -9,6 +9,9 @@ export interface Article {
   publishedAt: string
   readingTime: number // in minutes
   featured?: boolean
+  codeFile?: CodeFile | null
+  codeFolder?: CodeFolder | null
+  codeProject?: CodeProject | null
 }
 
 export interface Category {
@@ -36,12 +39,14 @@ export interface CodeFile {
   content: string
   linkedArticleSlug?: string
   linkedArticleTitle?: string
+  projectSlug?: string
 }
 
 export interface CodeFolder {
   name: string
   path: string
   children: (CodeFile | CodeFolder)[]
+  projectSlug?: string
 }
 
 export type CodeTree = (CodeFile | CodeFolder)[]

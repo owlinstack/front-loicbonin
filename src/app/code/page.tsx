@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Header } from '@/components/layout/Header'
 import { getCodeProjects } from '@/lib/api'
 import { CodeEditorClient } from '@/components/code/CodeEditorClient'
@@ -15,7 +16,13 @@ export default async function CodePage() {
       }}
     >
       <Header />
-      <CodeEditorClient projects={projects} />
+      <Suspense fallback={
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="spinner" />
+        </div>
+      }>
+        <CodeEditorClient projects={projects} />
+      </Suspense>
     </div>
   )
 }

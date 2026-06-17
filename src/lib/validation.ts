@@ -11,18 +11,6 @@ export const DateStringSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)");
 
-export const ArticleSchema = z.object({
-  id: ULIDSchema,
-  slug: z.string(),
-  title: z.string(),
-  excerpt: z.string(),
-  content: z.string(),
-  category: z.string(),
-  tags: z.array(z.string()),
-  publishedAt: DateStringSchema,
-  readingTime: z.number().nonnegative(),
-  featured: z.boolean().optional(),
-});
 
 export const CategorySchema = z.object({
   slug: z.string(),
@@ -42,6 +30,13 @@ export const ProjectSchema = z.object({
   featured: z.boolean().optional(),
 });
 
+export const CodeProjectSchema = z.object({
+  id: ULIDSchema,
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().optional().nullable(),
+});
+
 export const CodeFileSchema = z.object({
   name: z.string(),
   path: z.string(),
@@ -49,6 +44,7 @@ export const CodeFileSchema = z.object({
   content: z.string(),
   linkedArticleSlug: z.string().optional(),
   linkedArticleTitle: z.string().optional(),
+  projectSlug: z.string().optional(),
 });
 
 // Recursive schema for folder validation using z.lazy
@@ -58,6 +54,7 @@ export const CodeFolderSchema: z.ZodType<CodeFolder> = z.object({
   children: z.array(
     z.lazy(() => z.union([CodeFileSchema, CodeFolderSchema]))
   ),
+  projectSlug: z.string().optional(),
 });
 
 export const CodeTreeSchema = z.array(
@@ -91,6 +88,22 @@ export const ProfileSchema = z.object({
   avatarUrl: z.string().optional().nullable(),
 });
 
+export const ArticleSchema = z.object({
+  id: ULIDSchema,
+  slug: z.string(),
+  title: z.string(),
+  excerpt: z.string(),
+  content: z.string(),
+  category: z.string(),
+  tags: z.array(z.string()),
+  publishedAt: DateStringSchema,
+  readingTime: z.number().nonnegative(),
+  featured: z.boolean().optional(),
+  codeFile: CodeFileSchema.optional().nullable(),
+  codeFolder: z.lazy(() => CodeFolderSchema).optional().nullable(),
+  codeProject: CodeProjectSchema.optional().nullable(),
+});
+
 export const PaginatedArticlesSchema = z.object({
   articles: z.array(ArticleSchema),
   total: z.number().int().nonnegative(),
@@ -98,9 +111,4 @@ export const PaginatedArticlesSchema = z.object({
   pageSize: z.number().int().positive(),
 });
 
-export const CodeProjectSchema = z.object({
-  id: ULIDSchema,
-  name: z.string(),
-  slug: z.string(),
-  description: z.string().optional().nullable(),
-});
+
