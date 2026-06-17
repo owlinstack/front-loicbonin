@@ -7,10 +7,11 @@ interface ArticleProseProps {
   content: string;
 }
 
+type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+
 type Block =
   | { type: "p"; key: string; text: string }
-  | { type: "h2"; key: string; text: string }
-  | { type: "h3"; key: string; text: string }
+  | { type: HeadingLevel; key: string; text: string }
   | { type: "blockquote"; key: string; text: string }
   | { type: "code"; key: string; lang: string; code: string };
 
@@ -74,25 +75,16 @@ function parseMarkdownToBlocks(raw: string): Block[] {
       continue;
     }
 
-    // h2
-    if (line.startsWith("## ")) {
+    // Headings h1 to h6
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
       flushParagraph();
+      const level = `h${headingMatch[1].length}` as HeadingLevel;
+      const text = headingMatch[2].replace(/\s+#+$/, "").trim();
       blocks.push({
-        type: "h2",
-        key: `h2-${blocks.length}-${i}`,
-        text: line.slice(3),
-      });
-      i++;
-      continue;
-    }
-
-    // h3
-    if (line.startsWith("### ")) {
-      flushParagraph();
-      blocks.push({
-        type: "h3",
-        key: `h3-${blocks.length}-${i}`,
-        text: line.slice(4),
+        type: level,
+        key: `${level}-${blocks.length}-${i}`,
+        text: text,
       });
       i++;
       continue;
@@ -133,8 +125,27 @@ function escapeHtml(str: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function resolveImageUrl(url: string): string {
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  try {
+    const origin = new URL(apiUrl).origin;
+    const cleanUrl = url.startsWith("/") ? url : `/${url}`;
+    return `${origin}${cleanUrl}`;
+  } catch (e) {
+    return url;
+  }
+}
+
 function processInline(text: string): string {
-  return escapeHtml(text)
+  const escaped = escapeHtml(text);
+  return escaped
+    .replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+      const resolvedUrl = resolveImageUrl(url);
+      return `<img src="${resolvedUrl}" alt="${alt}" class="article-image" />`;
+    })
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>");
@@ -170,20 +181,20 @@ export function ArticleProse({ content }: ArticleProseProps) {
                 dangerouslySetInnerHTML={{ __html: processInline(block.text) }}
               />
             );
+          case "h1":
           case "h2":
-            return (
-              <h2
-                key={block.key}
-                dangerouslySetInnerHTML={{ __html: processInline(block.text) }}
-              />
-            );
           case "h3":
+          case "h4":
+          case "h5":
+          case "h6": {
+            const Tag = block.type;
             return (
-              <h3
+              <Tag
                 key={block.key}
                 dangerouslySetInnerHTML={{ __html: processInline(block.text) }}
               />
             );
+          }
           case "blockquote":
             return (
               <blockquote
