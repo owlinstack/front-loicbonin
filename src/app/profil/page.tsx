@@ -6,8 +6,28 @@ import { getProfile } from "@/lib/api";
 export default async function ProfilPage() {
   const profile = await getProfile();
 
+  const personSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.name,
+    description: profile.bio,
+    jobTitle: 'Développeur Fullstack',
+    url: 'https://loicbonin.com',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Lyon',
+      addressRegion: 'Auvergne-Rhône-Alpes',
+      addressCountry: 'FR',
+    },
+    knowsAbout: profile.skills.map((s) => s.term),
+  };
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "var(--color-bg)" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
       <Header />
 
       <main

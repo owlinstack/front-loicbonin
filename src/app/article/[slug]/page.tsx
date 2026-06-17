@@ -94,8 +94,37 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     )
   }
 
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.publishedAt,
+    author: {
+      '@type': 'Person',
+      name: 'Loïc Bonin',
+      url: 'https://loicbonin.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Loïc Bonin',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://loicbonin.com/avatar.jpg', // fallback image path
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://loicbonin.com/article/${article.slug}`,
+    },
+  };
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <ReadingProgress />
       <Header />
 
