@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -8,6 +9,49 @@ import { getArticleBySlug } from '@/lib/api'
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params
+  const article = await getArticleBySlug(slug)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://loicbonin.com'
+  const url = `${baseUrl}/article/${slug}`
+
+  if (!article) {
+    return {
+      title: "Article non trouvé — Loïc Bonin",
+      description: "L'article demandé n'existe pas ou a été retiré.",
+      robots: {
+        index: false,
+        follow: true,
+      },
+    }
+  }
+
+  return {
+    title: `${article.title} — Loïc Bonin`,
+    description: article.excerpt,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url: url,
+      siteName: 'Loïc Bonin',
+      type: 'article',
+      publishedTime: article.publishedAt,
+      authors: ['Loïc Bonin'],
+      tags: article.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.excerpt,
+    },
+  }
 }
 
 function formatDate(iso: string) {
