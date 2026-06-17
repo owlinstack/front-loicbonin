@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/Header";
+import Image from "next/image";
 import { getProfile } from "@/lib/api";
 
 export default async function ProfilPage() {
@@ -26,12 +27,12 @@ export default async function ProfilPage() {
           }}
         >
           {profile.avatarUrl && (
-            <img
+            <Image
               src={profile.avatarUrl}
               alt={profile.name}
+              width={200}
+              height={200}
               style={{
-                width: 200,
-                height: 200,
                 borderRadius: "50%",
                 objectFit: "cover",
                 border: "1px solid var(--color-border)",
@@ -40,6 +41,7 @@ export default async function ProfilPage() {
               }}
             />
           )}
+
           <h1
             style={{
               fontFamily: "var(--font-display)",

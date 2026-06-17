@@ -1,20 +1,30 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { applyTheme, getStoredTheme, toggleTheme, type Theme } from '@/lib/theme'
+import { useEffect, useState } from "react";
+import {
+  applyTheme,
+  getStoredTheme,
+  toggleTheme,
+  type Theme,
+} from "@/lib/theme";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    setTheme(getStoredTheme())
-  }, [])
+    const storedTheme = getStoredTheme();
+    const timeoutId = setTimeout(() => {
+      setTheme(storedTheme);
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   const handleToggle = () => {
-    const next = toggleTheme(theme)
-    applyTheme(next)
-    setTheme(next)
-  }
+    const next = toggleTheme(theme);
+    applyTheme(next);
+    setTheme(next);
+  };
 
   return (
     <button
@@ -23,28 +33,29 @@ export function ThemeToggle() {
       style={{
         width: 40,
         height: 40,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        color: 'var(--color-text-muted)',
-        transition: 'color 150ms',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "transparent",
+        border: "none",
+        cursor: "pointer",
+        color: "var(--color-text-muted)",
+        transition: "color 150ms",
         borderRadius: 4,
         flexShrink: 0,
       }}
       onMouseEnter={(e) => {
-        ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text)'
+        (e.currentTarget as HTMLButtonElement).style.color =
+          "var(--color-text)";
       }}
       onMouseLeave={(e) => {
-        ;(e.currentTarget as HTMLButtonElement).style.color =
-          'var(--color-text-muted)'
+        (e.currentTarget as HTMLButtonElement).style.color =
+          "var(--color-text-muted)";
       }}
     >
-      {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+      {theme === "dark" ? <SunIcon /> : <MoonIcon />}
     </button>
-  )
+  );
 }
 
 function SunIcon() {
@@ -63,7 +74,7 @@ function SunIcon() {
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
     </svg>
-  )
+  );
 }
 
 function MoonIcon() {
@@ -81,5 +92,5 @@ function MoonIcon() {
     >
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
-  )
+  );
 }

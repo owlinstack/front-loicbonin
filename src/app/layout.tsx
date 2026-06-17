@@ -26,6 +26,7 @@ export default function RootLayout({
           href="https://api.fontshare.com/v2/css?f[]=editorial-new@400,500&display=swap"
           rel="stylesheet"
         />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap"
           rel="stylesheet"
