@@ -1,7 +1,16 @@
+import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { getProjects } from '@/lib/api'
 import type { Project } from '@/lib/types'
+
+export const metadata: Metadata = {
+  title: "Réalisations & Portfolio",
+  description: "Découvrez mon portfolio de projets web récents, créés avec React, Next.js, PayloadCMS et d'autres technologies modernes.",
+  alternates: {
+    canonical: "/realisations",
+  },
+}
 
 function TechPill({ label }: { label: string }) {
   return (

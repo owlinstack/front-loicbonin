@@ -21,7 +21,7 @@ export async function generateMetadata({
 
   if (!article) {
     return {
-      title: "Article non trouvé — Loïc Bonin",
+      title: "Article non trouvé",
       description: "L'article demandé n'existe pas ou a été retiré.",
       robots: {
         index: false,
@@ -31,7 +31,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${article.title} — Loïc Bonin`,
+    title: article.title,
     description: article.excerpt,
     alternates: {
       canonical: url,

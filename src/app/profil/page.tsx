@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import { getProfile } from "@/lib/api";
+
+export const metadata: Metadata = {
+  title: "Profil & Compétences",
+  description: "Découvrez mon parcours de développeur fullstack, mes compétences techniques et mon éducation.",
+  alternates: {
+    canonical: "/profil",
+  },
+};
 
 export default async function ProfilPage() {
   const profile = await getProfile();

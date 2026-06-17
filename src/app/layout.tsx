@@ -2,9 +2,16 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Loïc Bonin — Veille & Portfolio",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://loicbonin.com'),
+  title: {
+    default: "Loïc Bonin — Veille & Portfolio",
+    template: "%s — Loïc Bonin",
+  },
   description:
     "Veille technologique, réalisations et ressources code de Loïc Bonin, développeur.",
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export const viewport: Viewport = {
