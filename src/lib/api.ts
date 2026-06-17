@@ -744,6 +744,23 @@ function validateData<T>(
 
 // ── API functions ──────────────────────────────────────────────────
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+async function fetchFromAPI<T>(path: string, schema: z.ZodType<T>, fallbackData: T): Promise<T> {
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      next: { revalidate: 300 } // Stratégie ISR : 5 min de cache
+    });
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const data = await res.json();
+    const rawData = data.data ?? data;
+    return validateData(schema, rawData, path);
+  } catch (err) {
+    console.warn(`[API Fallback] Fetch failed for ${path}, using local mocks:`, err);
+    return validateData(schema, fallbackData, `${path} (Mock)`);
+  }
+}
+
 export async function getArticles(params?: {
   category?: string;
   tag?: string;
@@ -751,7 +768,13 @@ export async function getArticles(params?: {
   pageSize?: number;
 }): Promise<PaginatedArticles> {
   const { category, tag, page = 1, pageSize = 10 } = params ?? {};
-  await new Promise((r) => setTimeout(r, 200));
+  
+  const searchParams = new URLSearchParams({
+    page: String(page),
+    limit: String(pageSize),
+  });
+  if (category && category !== "all") searchParams.append("category", category);
+  if (tag) searchParams.append("tag", tag);
 
   let filtered = [...MOCK_ARTICLES];
   if (category && category !== "all") {
@@ -760,67 +783,67 @@ export async function getArticles(params?: {
   if (tag) {
     filtered = filtered.filter((a) => a.tags.includes(tag));
   }
-
   const start = (page - 1) * pageSize;
-  const data = {
+  const mockFallback: PaginatedArticles = {
     articles: filtered.slice(start, start + pageSize),
     total: filtered.length,
     page,
     pageSize,
   };
 
-  return validateData(PaginatedArticlesSchema, data, "getArticles");
+  return fetchFromAPI<PaginatedArticles>(
+    `/articles?${searchParams.toString()}`,
+    PaginatedArticlesSchema,
+    mockFallback
+  );
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  await new Promise((r) => setTimeout(r, 150));
-  const data = MOCK_ARTICLES.find((a) => a.slug === slug) ?? null;
-  return validateData(ArticleSchema.nullable(), data, "getArticleBySlug");
+  return fetchFromAPI<Article | null>(
+    `/articles/${slug}`,
+    ArticleSchema.nullable(),
+    MOCK_ARTICLES.find((a) => a.slug === slug) ?? null
+  );
 }
 
 export async function getCategories(): Promise<Category[]> {
-  await new Promise((r) => setTimeout(r, 100));
-  return validateData(
+  return fetchFromAPI<Category[]>(
+    '/categories',
     z.array(CategorySchema),
-    MOCK_CATEGORIES,
-    "getCategories",
+    MOCK_CATEGORIES
   );
 }
 
 export async function getTags(): Promise<Tag[]> {
-  await new Promise((r) => setTimeout(r, 100));
-  return validateData(z.array(z.string()), MOCK_TAGS, "getTags");
+  return fetchFromAPI<Tag[]>(
+    '/tags',
+    z.array(z.string()),
+    MOCK_TAGS
+  );
 }
 
 export async function getProjects(): Promise<Project[]> {
-  await new Promise((r) => setTimeout(r, 150));
-  return validateData(z.array(ProjectSchema), MOCK_PROJECTS, "getProjects");
+  return fetchFromAPI<Project[]>(
+    '/projects',
+    z.array(ProjectSchema),
+    MOCK_PROJECTS
+  );
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-
 export async function getCodeProjects(): Promise<CodeProject[]> {
-  try {
-    const res = await fetch(`${BASE_URL}/code/projects`, { next: { revalidate: 300 } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return validateData(z.array(CodeProjectSchema), data, "getCodeProjects");
-  } catch (err) {
-    console.warn("[API Fallback] getCodeProjects failed, using local mock data:", err);
-    return validateData(z.array(CodeProjectSchema), MOCK_CODE_PROJECTS, "getCodeProjects (Mock)");
-  }
+  return fetchFromAPI<CodeProject[]>(
+    '/code/projects',
+    z.array(CodeProjectSchema),
+    MOCK_CODE_PROJECTS
+  );
 }
 
 export async function getCodeProjectTree(slug: string): Promise<CodeTree> {
-  try {
-    const res = await fetch(`${BASE_URL}/code/projects/${slug}/tree`, { next: { revalidate: 300 } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return validateData(CodeTreeSchema, data, "getCodeProjectTree");
-  } catch (err) {
-    console.warn(`[API Fallback] getCodeProjectTree for slug ${slug} failed, using local mock data:`, err);
-    return validateData(CodeTreeSchema, MOCK_CODE_TREE, "getCodeProjectTree (Mock)");
-  }
+  return fetchFromAPI<CodeTree>(
+    `/code/projects/${slug}/tree`,
+    CodeTreeSchema,
+    MOCK_CODE_TREE
+  );
 }
 
 export async function getCodeTree(): Promise<CodeTree> {
@@ -829,17 +852,7 @@ export async function getCodeTree(): Promise<CodeTree> {
 }
 
 export async function getCodeFile(path: string): Promise<CodeFile | null> {
-  try {
-    const res = await fetch(`${BASE_URL}/code/files/${path}`, { next: { revalidate: 300 } });
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const json = await res.json();
-    const rawData = json.data ?? json;
-    return validateData(CodeFileSchema.nullable(), rawData, "getCodeFile");
-  } catch (err) {
-    console.warn(`[API Fallback] getCodeFile for path ${path} failed, using local mock data:`, err);
+  const findFileFallback = (): CodeFile | null => {
     const findFile = (tree: CodeTree): CodeFile | null => {
       for (const node of tree) {
         if ("children" in node) {
@@ -851,12 +864,20 @@ export async function getCodeFile(path: string): Promise<CodeFile | null> {
       }
       return null;
     };
-    const data = findFile(MOCK_CODE_TREE);
-    return validateData(CodeFileSchema.nullable(), data, "getCodeFile (Mock)");
-  }
+    return findFile(MOCK_CODE_TREE);
+  };
+
+  return fetchFromAPI<CodeFile | null>(
+    `/code/files/${path}`,
+    CodeFileSchema.nullable(),
+    findFileFallback()
+  );
 }
 
 export async function getProfile(): Promise<Profile> {
-  await new Promise((r) => setTimeout(r, 100));
-  return validateData(ProfileSchema, MOCK_PROFILE, "getProfile");
+  return fetchFromAPI<Profile>(
+    '/profile',
+    ProfileSchema,
+    MOCK_PROFILE
+  );
 }
