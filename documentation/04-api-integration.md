@@ -82,3 +82,18 @@ Puisque le site de veille est essentiellement destiné à la lecture de contenu,
 1. **Génération au Build** : Au moment de la compilation (`pnpm build`), Next.js appelle l'API Laravel pour pré-générer les pages d'articles sous forme de HTML statique.
 2. **Revalidation en arrière-plan** : Lorsqu'un utilisateur demande une page pré-générée, Next.js lui sert instantanément la version du cache CDN. Si la page a plus de 5 minutes, Next.js déclenche en arrière-plan une nouvelle requête vers l'API Laravel pour régénérer la page avec les dernières modifications de Filament sans impacter le temps de chargement pour l'utilisateur courant.
 3. **Invalidation à la demande** : Pour forcer la mise à jour immédiate d'un article édité sur Filament, un webhook d'invalidation (Route Handler Next.js) peut être configuré pour appeler `revalidatePath('/article/[slug]')` dès la modification enregistrée dans le panel d'administration.
+
+---
+
+## 💻 Explorateur de Code Multi-Projets
+
+L'explorateur de code (`/code`) interroge le backend Laravel pour obtenir la liste des projets de code disponibles ainsi que leur arborescence récursive :
+
+* **Endpoints utilisés** :
+  * `GET /api/v1/code/projects` : Liste les projets (nom, description, slug).
+  * `GET /api/v1/code/projects/{slug}/tree` : Récupère l'arborescence complète (dossiers, fichiers et articles liés) pour le projet spécifié.
+  * `GET /api/v1/code/files/{path}` : Récupère le contenu brut et les métadonnées d'un fichier de code spécifique.
+
+* **Mécanisme de repli (Fallback)** :
+  En cas d'indisponibilité du serveur Laravel ou lors du build statique initial, le client d'API bascule automatiquement sur des données mockées locales (`MOCK_CODE_PROJECTS` et `MOCK_CODE_TREE`) afin d'assurer la résilience de l'application.
+
