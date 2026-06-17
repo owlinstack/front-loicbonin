@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import { FileTree } from '@/components/code/FileTree'
 import { CodeViewer } from '@/components/code/CodeViewer'
-import { CodeGallery } from '@/components/code/CodeGallery'
-import type { CodeFile, CodeTree } from '@/lib/types'
+import { ProjectGrid } from '@/components/code/ProjectGrid'
+import { getCodeProjectTree } from '@/lib/api'
+import type { CodeFile, CodeTree, CodeProject } from '@/lib/types'
 
 interface CodeEditorClientProps {
-  tree: CodeTree
+  projects: CodeProject[]
 }
 
 function flattenFiles(tree: CodeTree): CodeFile[] {
@@ -19,10 +20,12 @@ function flattenFiles(tree: CodeTree): CodeFile[] {
   return files
 }
 
-export function CodeEditorClient({ tree }: CodeEditorClientProps) {
-  // Phase A = gallery, Phase B = editor
-  const [phase, setPhase]           = useState<'gallery' | 'editor'>('gallery')
+export function CodeEditorClient({ projects }: CodeEditorClientProps) {
+  const [phase, setPhase]           = useState<'projects' | 'editor'>('projects')
+  const [activeProject, setActiveProject] = useState<CodeProject | null>(null)
+  const [activeTree, setActiveTree] = useState<CodeTree>([])
   const [activeFile, setActiveFile] = useState<CodeFile | null>(null)
+  const [isLoading, setIsLoading]   = useState(false)
   const [theme, setTheme]           = useState<'dark' | 'light'>('dark')
 
   // Sync theme with <html data-theme>
@@ -37,9 +40,24 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
     return () => obs.disconnect()
   }, [])
 
-  const handleSelectGallery = (file: CodeFile) => {
-    setActiveFile(file)
-    setPhase('editor')
+  const handleSelectProject = async (project: CodeProject) => {
+    setIsLoading(true)
+    setActiveProject(project)
+    try {
+      const tree = await getCodeProjectTree(project.slug)
+      setActiveTree(tree)
+      const files = flattenFiles(tree)
+      if (files.length > 0) {
+        setActiveFile(files[0])
+      } else {
+        setActiveFile(null)
+      }
+      setPhase('editor')
+    } catch (err) {
+      console.error('Failed to load project code tree:', err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSelectTree = (file: CodeFile) => {
@@ -47,19 +65,18 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
   }
 
   const handleBack = () => {
-    setPhase('gallery')
+    setPhase('projects')
+    setActiveProject(null)
+    setActiveTree([])
+    setActiveFile(null)
   }
 
-  // In editor phase, auto-resolve file from tree if none selected
-  const resolvedFile =
-    phase === 'editor'
-      ? activeFile ?? (flattenFiles(tree)[0] ?? null)
-      : null
+  const filesList = flattenFiles(activeTree)
 
   return (
     <>
-      {/* ── Phase A: Gallery ── */}
-      {phase === 'gallery' && (
+      {/* ── Phase A: Grille des Projets ── */}
+      {phase === 'projects' && (
         <main
           style={{
             flex: 1,
@@ -92,7 +109,7 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
                   marginBottom: 6,
                 }}
               >
-                Extraits de code
+                Explorateur de Code
               </h1>
               <p
                 style={{
@@ -102,46 +119,35 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
                   lineHeight: 1.5,
                 }}
               >
-                Fragments réutilisables, hooks et utilitaires. Cliquer pour ouvrir l&apos;éditeur.
+                Parcourez les sources réelles de mes différents projets et réalisations.
               </p>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 'var(--text-xs)',
-                color: 'var(--color-text-muted)',
-                letterSpacing: '0.06em',
-              }}
-            >
-              {['TS', 'PY', 'PHP', 'CSS', 'HTML'].map((lang) => (
-                <span
-                  key={lang}
-                  style={{
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 3,
-                    padding: '2px 7px',
-                  }}
-                >
-                  {lang}
-                </span>
-              ))}
             </div>
           </div>
 
-          <CodeGallery
-            tree={tree}
-            theme={theme}
-            onSelect={handleSelectGallery}
-          />
+          {isLoading ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '80px 0',
+                gap: 12,
+              }}
+            >
+              <div className="spinner" />
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                Chargement de l&apos;arborescence du projet...
+              </p>
+            </div>
+          ) : (
+            <ProjectGrid projects={projects} onSelect={handleSelectProject} />
+          )}
         </main>
       )}
 
-      {/* ── Phase B: Editor ── */}
-      {phase === 'editor' && (
+      {/* ── Phase B: Éditeur de Code ── */}
+      {phase === 'editor' && !isLoading && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Editor top bar */}
           <div
@@ -170,6 +176,7 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
+                flexShrink: 0,
               }}
               onMouseEnter={(e) =>
                 ((e.currentTarget as HTMLElement).style.color = 'var(--color-text)')
@@ -178,7 +185,7 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
                 ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)')
               }
             >
-              ← Galerie
+              ← Projets
             </button>
 
             {/* Open-tab style file tabs */}
@@ -191,8 +198,8 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
                 minWidth: 0,
               }}
             >
-              {flattenFiles(tree).map((file) => {
-                const active = resolvedFile?.path === file.path
+              {filesList.map((file) => {
+                const active = activeFile?.path === file.path
                 return (
                   <button
                     key={file.path}
@@ -243,14 +250,14 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
                 Fichiers
               </p>
               <FileTree
-                tree={tree}
-                activePath={resolvedFile?.path ?? null}
+                tree={activeTree}
+                activePath={activeFile?.path ?? null}
                 onSelect={handleSelectTree}
               />
             </div>
 
             {/* Code viewer */}
-            <CodeViewer file={resolvedFile} theme={theme} />
+            <CodeViewer file={activeFile} theme={theme} />
           </div>
         </div>
       )}
@@ -263,6 +270,17 @@ export function CodeEditorClient({ tree }: CodeEditorClientProps) {
           overflow-y: auto;
           padding: 20px 16px;
           background: var(--color-surface);
+        }
+        .spinner {
+          width: 28px;
+          height: 28px;
+          border: 2px solid var(--color-border);
+          border-top-color: var(--color-teal);
+          border-radius: 50%;
+          animation: spin 800ms linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
         @media (max-width: 768px) {
           .code-editor-sidebar { display: none; }

@@ -1,9 +1,9 @@
 import { Header } from '@/components/layout/Header'
-import { getCodeTree } from '@/lib/api'
+import { getCodeProjects } from '@/lib/api'
 import { CodeEditorClient } from '@/components/code/CodeEditorClient'
 
 export default async function CodePage() {
-  const tree = await getCodeTree()
+  const projects = await getCodeProjects()
 
   return (
     <div
@@ -15,7 +15,7 @@ export default async function CodePage() {
       }}
     >
       <Header />
-      <CodeEditorClient tree={tree} />
+      <CodeEditorClient projects={projects} />
     </div>
   )
 }
