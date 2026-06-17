@@ -1,41 +1,66 @@
-import { Header } from '@/components/layout/Header'
-import { getProfile } from '@/lib/api'
+import { Header } from "@/components/layout/Header";
+import { getProfile } from "@/lib/api";
 
 export default async function ProfilPage() {
-  const profile = await getProfile()
+  const profile = await getProfile();
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "var(--color-bg)" }}>
       <Header />
 
       <main
         style={{
           maxWidth: 640,
-          margin: '0 auto',
-          padding: '56px 24px 96px',
+          margin: "0 auto",
+          padding: "56px 24px 96px",
         }}
       >
-        {/* Hero name */}
-        <h1
+        {/* Hero name & Avatar */}
+        <div
           style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--text-hero)',
-            fontWeight: 400,
-            color: 'var(--color-text)',
-            lineHeight: 1.0,
+            display: "flex",
+            alignItems: "center",
+            gap: 24,
             marginBottom: 40,
-            letterSpacing: '-0.02em',
+            flexWrap: "wrap",
           }}
         >
-          {profile.name}
-        </h1>
+          {profile.avatarUrl && (
+            <img
+              src={profile.avatarUrl}
+              alt={profile.name}
+              style={{
+                width: 200,
+                height: 200,
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "1px solid var(--color-border)",
+                background: "var(--color-surface)",
+                flexShrink: 0,
+              }}
+            />
+          )}
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "var(--text-hero)",
+              fontWeight: 400,
+              color: "var(--color-text)",
+              lineHeight: 1.0,
+              margin: 0,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {profile.name}
+          </h1>
+        </div>
 
         {/* Bio */}
         <p
           style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: 'var(--text-base)',
-            color: 'var(--color-text-muted)',
+            fontFamily: "var(--font-sans)",
+            fontSize: "var(--text-base)",
+            color: "var(--color-text-muted)",
             lineHeight: 1.75,
             marginBottom: 64,
           }}
@@ -45,8 +70,8 @@ export default async function ProfilPage() {
 
         <hr
           style={{
-            border: 'none',
-            borderTop: '1px solid var(--color-border)',
+            border: "none",
+            borderTop: "1px solid var(--color-border)",
             marginBottom: 48,
           }}
         />
@@ -55,11 +80,11 @@ export default async function ProfilPage() {
         <section aria-label="Compétences" style={{ marginBottom: 64 }}>
           <p
             style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-xs)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: 'var(--color-text-muted)',
+              fontFamily: "var(--font-mono)",
+              fontSize: "var(--text-xs)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--color-text-muted)",
               marginBottom: 32,
             }}
           >
@@ -70,21 +95,21 @@ export default async function ProfilPage() {
               <div
                 key={skill.term}
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '140px 1fr',
-                  gap: '0 32px',
+                  display: "grid",
+                  gridTemplateColumns: "140px 1fr",
+                  gap: "0 32px",
                   marginBottom: i < profile.skills.length - 1 ? 28 : 0,
-                  alignItems: 'baseline',
+                  alignItems: "baseline",
                 }}
               >
                 <dt
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'var(--text-xs)',
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "var(--text-xs)",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
                     fontWeight: 500,
-                    color: 'var(--color-text)',
+                    color: "var(--color-text)",
                     paddingTop: 3,
                   }}
                 >
@@ -92,9 +117,9 @@ export default async function ProfilPage() {
                 </dt>
                 <dd
                   style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--color-text-muted)',
+                    fontFamily: "var(--font-sans)",
+                    fontSize: "var(--text-sm)",
+                    color: "var(--color-text-muted)",
                     lineHeight: 1.7,
                   }}
                 >
@@ -107,8 +132,8 @@ export default async function ProfilPage() {
 
         <hr
           style={{
-            border: 'none',
-            borderTop: '1px solid var(--color-border)',
+            border: "none",
+            borderTop: "1px solid var(--color-border)",
             marginBottom: 48,
           }}
         />
@@ -117,33 +142,33 @@ export default async function ProfilPage() {
         <section aria-label="Parcours" style={{ marginBottom: 64 }}>
           <p
             style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-xs)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: 'var(--color-text-muted)',
+              fontFamily: "var(--font-mono)",
+              fontSize: "var(--text-xs)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--color-text-muted)",
               marginBottom: 32,
             }}
           >
             Parcours
           </p>
-          <ol style={{ listStyle: 'none' }}>
+          <ol style={{ listStyle: "none" }}>
             {profile.timeline.map((item, i) => (
               <li
                 key={i}
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '140px 1fr',
-                  gap: '0 32px',
+                  display: "grid",
+                  gridTemplateColumns: "140px 1fr",
+                  gap: "0 32px",
                   marginBottom: i < profile.timeline.length - 1 ? 32 : 0,
                 }}
               >
                 <span
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'var(--text-xs)',
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '0.04em',
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "var(--text-xs)",
+                    color: "var(--color-text-muted)",
+                    letterSpacing: "0.04em",
                     paddingTop: 3,
                     lineHeight: 1.4,
                   }}
@@ -153,10 +178,10 @@ export default async function ProfilPage() {
                 <div>
                   <p
                     style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: 'var(--text-sm)',
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "var(--text-sm)",
                       fontWeight: 600,
-                      color: 'var(--color-text)',
+                      color: "var(--color-text)",
                       marginBottom: 4,
                       lineHeight: 1.4,
                     }}
@@ -165,9 +190,9 @@ export default async function ProfilPage() {
                   </p>
                   <p
                     style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: 'var(--text-sm)',
-                      color: 'var(--color-text-muted)',
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "var(--text-sm)",
+                      color: "var(--color-text-muted)",
                       lineHeight: 1.65,
                     }}
                   >
@@ -183,8 +208,8 @@ export default async function ProfilPage() {
           <>
             <hr
               style={{
-                border: 'none',
-                borderTop: '1px solid var(--color-border)',
+                border: "none",
+                borderTop: "1px solid var(--color-border)",
                 marginBottom: 48,
               }}
             />
@@ -193,33 +218,33 @@ export default async function ProfilPage() {
             <section aria-label="Éducation" style={{ marginBottom: 64 }}>
               <p
                 style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 'var(--text-xs)',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-text-muted)',
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "var(--text-xs)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-muted)",
                   marginBottom: 32,
                 }}
               >
                 Éducation
               </p>
-              <ol style={{ listStyle: 'none' }}>
+              <ol style={{ listStyle: "none" }}>
                 {profile.education.map((item, i) => (
                   <li
                     key={i}
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '140px 1fr',
-                      gap: '0 32px',
+                      display: "grid",
+                      gridTemplateColumns: "140px 1fr",
+                      gap: "0 32px",
                       marginBottom: i < profile.education.length - 1 ? 32 : 0,
                     }}
                   >
                     <span
                       style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 'var(--text-xs)',
-                        color: 'var(--color-text-muted)',
-                        letterSpacing: '0.04em',
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-text-muted)",
+                        letterSpacing: "0.04em",
                         paddingTop: 3,
                         lineHeight: 1.4,
                       }}
@@ -229,10 +254,10 @@ export default async function ProfilPage() {
                     <div>
                       <p
                         style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: 'var(--text-sm)',
+                          fontFamily: "var(--font-sans)",
+                          fontSize: "var(--text-sm)",
                           fontWeight: 600,
-                          color: 'var(--color-text)',
+                          color: "var(--color-text)",
                           marginBottom: 4,
                           lineHeight: 1.4,
                         }}
@@ -241,9 +266,9 @@ export default async function ProfilPage() {
                       </p>
                       <p
                         style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: 'var(--text-sm)',
-                          color: 'var(--color-text-muted)',
+                          fontFamily: "var(--font-sans)",
+                          fontSize: "var(--text-sm)",
+                          color: "var(--color-text-muted)",
                           lineHeight: 1.65,
                         }}
                       >
@@ -259,10 +284,7 @@ export default async function ProfilPage() {
 
         {/* CV link */}
         {profile.cvUrl && (
-          <a
-            href={profile.cvUrl}
-            className="cv-link"
-          >
+          <a href={profile.cvUrl} className="cv-link">
             Télécharger le CV →
           </a>
         )}
@@ -283,5 +305,5 @@ export default async function ProfilPage() {
         }
       `}</style>
     </div>
-  )
+  );
 }
