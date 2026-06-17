@@ -8,10 +8,10 @@ Bienvenue dans la documentation technique du frontend de l'application **loicbon
 
 Pour faciliter la prise en main et la maintenance du projet, voici le plan de découpage de la documentation :
 
-| **01** | [Stack Technique](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/documentation/01-stack.md) | Détail des technologies utilisées (Next.js 16, React 19, Tailwind CSS v4, TypeScript, Zod, Shiki). |
-| **02** | [Architecture & Découpage](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/documentation/02-architecture.md) | Structure de dossiers du projet, routage dynamique asynchrone et frontières Client/Server Components. |
-| **03** | [Conventions & Design System](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/documentation/03-conventions.md) | Normes de typage strict, gestion native du thème sombre/clair sans flash et gestion de la dette technique via les "Simplifications". |
-| **04** | [Intégration API & Sécurisation](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/documentation/04-api-integration.md) | Connexion réseau au backend Laravel 13, validation défensive avec Zod et mise en cache (ISR). |
+| **01** | [Stack Technique](/front-loicbonin/documentation/01-stack.md) | Détail des technologies utilisées (Next.js 16, React 19, Tailwind CSS v4, TypeScript, Zod, Shiki). |
+| **02** | [Architecture & Découpage](/front-loicbonin/documentation/02-architecture.md) | Structure de dossiers du projet, routage dynamique asynchrone et frontières Client/Server Components. |
+| **03** | [Conventions & Design System](/front-loicbonin/documentation/03-conventions.md) | Normes de typage strict, gestion native du thème sombre/clair sans flash et gestion de la dette technique via les "Simplifications". |
+| **04** | [Intégration API & Sécurisation](/front-loicbonin/documentation/04-api-integration.md) | Connexion réseau au backend Laravel 13, validation défensive avec Zod et mise en cache (ISR). |
 
 ---
 

@@ -14,7 +14,7 @@ Le projet intègre **Tailwind CSS v4** qui utilise des imports natifs CSS pour c
 
 ### 2. Design Tokens Globaux
 
-Tous les tokens de design (couleurs, polices, tailles de texte réactives) sont définis en CSS pur sous forme de variables globales (`:root`) dans [globals.css](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/src/app/globals.css).
+Tous les tokens de design (couleurs, polices, tailles de texte réactives) sont définis en CSS pur sous forme de variables globales (`:root`) dans [globals.css](/front-loicbonin/src/app/globals.css).
 
 ```css
 :root {
@@ -58,19 +58,20 @@ Pour respecter les contraintes de rendu des React Server Components (qui interdi
 Pour offrir une expérience premium, la bascule de thème évite tout clignotement ou flash blanc lors du rechargement de la page :
 
 1. **Persistance** : Le choix de l'utilisateur est stocké dans le `localStorage` sous la clé `lb-theme`.
-2. **Application Synchrone via Script Next.js** : Afin d'éviter le flash visuel pendant que React charge, un script synchrone ultra-léger et bloquant est configuré à l'aide du composant `<Script>` de Next.js avec la stratégie `beforeInteractive`. Il est placé au début du `<body>` dans [layout.tsx](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/src/app/layout.tsx) :
+2. **Application Synchrone via script natif** : Afin d'éviter le flash visuel pendant que React charge, un script synchrone ultra-léger et bloquant est configuré directement via une balise `<script>` native. Il est placé au début du `<body>` dans [layout.tsx](/front-loicbonin/src/app/layout.tsx) :
 
    ```tsx
-   import Script from 'next/script'
-
-   export default function RootLayout({ children }: { children: React.ReactNode }) {
+   export default function RootLayout({
+     children,
+   }: {
+     children: React.ReactNode;
+   }) {
      return (
        <html lang="fr" data-theme="dark" suppressHydrationWarning>
          {/* ... */}
          <body>
-           <Script
+           <script
              id="theme-script"
-             strategy="beforeInteractive"
              dangerouslySetInnerHTML={{
                __html: `
                  try {
@@ -83,9 +84,10 @@ Pour offrir une expérience premium, la bascule de thème évite tout clignoteme
            {children}
          </body>
        </html>
-     )
+     );
    }
    ```
+
 3. **Hydratation Sécurisée** : La balise `<html>` utilise l'attribut `suppressHydrationWarning` pour éviter que Next.js ne lève des alertes de décalage d'hydratation entre le HTML brut du serveur et l'attribut `data-theme` injecté côté client avant le rendu de l'interface.
 
 ---
@@ -95,6 +97,7 @@ Pour offrir une expérience premium, la bascule de thème évite tout clignoteme
 La visibilité dans les moteurs de recherche et l'accessibilité sont des priorités absolues dans la structuration des composants :
 
 ### 1. Hiérarchie Unique et Sémantique
+
 - **Un seul `<h1>` par page** : Chaque route de l'application doit comporter un unique titre principal `<h1>`. Les sections internes doivent utiliser une structure logique descendante (`<h2>`, puis `<h3>`).
 - **Balises Sémantiques structurales** : L'utilisation de `<div>` génériques doit être évitée pour les structures de pages majeures. Privilégier les balises natives :
   - `<header>` pour la barre de navigation supérieure.
@@ -104,21 +107,25 @@ La visibilité dans les moteurs de recherche et l'accessibilité sont des priori
   - `<nav>` pour structurer les listes de liens et les filtres.
 
 ### 2. Métadonnées Statiques et Dynamiques (Metadata)
+
 - **Métadonnées globales** : L'identité de base et les configurations d'affichage global sont exportées de manière statique via l'objet `metadata` dans le layout racine.
 - **Routes Dynamiques** : Les pages dont le titre et le contenu changent selon la base de données (ex : `/article/[slug]`) doivent implémenter et exporter la fonction `generateMetadata` de Next.js pour injecter de manière asynchrone le titre et la description corrects :
 
   ```tsx
-  export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-    const { slug } = await params
-    const article = await getArticleBySlug(slug)
+  export async function generateMetadata({
+    params,
+  }: ArticlePageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const article = await getArticleBySlug(slug);
     return {
       title: article ? `${article.title} — Loïc Bonin` : "Article non trouvé",
       description: article?.excerpt || "Détail de l'article",
-    }
+    };
   }
   ```
 
 ### 3. Identifiants Uniques pour les Tests et Automatisation
+
 - Chaque élément interactif de premier plan (ThemeToggle, boutons de filtre, pagination, champ d'édition de code) doit obligatoirement posséder un attribut `id` unique et stable pour simplifier les tests d'intégration, de bout en bout, et pour améliorer la navigation par raccourcis ou claviers.
 
 ---

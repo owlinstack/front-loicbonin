@@ -31,7 +31,7 @@ Le principe fondamental de développement du projet est la sobriété de code : 
 Afin d'offrir une base de code lisible :
 
 - Le type `any` est formellement banni.
-- Toutes les interfaces de données (articles, projets, profil) sont centralisées et documentées dans [types.ts](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/src/lib/types.ts).
+- Toutes les interfaces de données (articles, projets, profil) sont centralisées et documentées dans [types.ts](/front-loicbonin/src/lib/types.ts).
 
 ### 3. Exploitation Native du Rendu Serveur (RSC) et du Routage par URL
 

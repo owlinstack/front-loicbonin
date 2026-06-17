@@ -8,40 +8,45 @@ Ce document décrit comment le frontend Next.js communique de manière sécuris�
 
 Le frontend ne contient aucun secret ni aucune URL codée en dur. Les requêtes réseau s'appuient sur des variables d'environnement configurées au déploiement.
 
-* **Variable principale** : `NEXT_PUBLIC_API_URL`
-* **Valeur locale** (développement) : `http://localhost:8000/api/v1`
-* **Valeur production** : `https://api.loicbonin.dev/api/v1`
+- **Variable principale** : `NEXT_PUBLIC_API_URL`
+- **Valeur locale** (développement) : `http://localhost:8000/api/v1`
+- **Valeur production** : `https://api.loicbonin.dev/api/v1`
 
-Toutes les requêtes asynchrones transitent par le client unifié défini dans [src/lib/api.ts](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/src/lib/api.ts).
+Toutes les requêtes asynchrones transitent par le client unifié défini dans [src/lib/api.ts](/front-loicbonin/src/lib/api.ts).
 
 ---
 
 ## 🛡️ Architecture Défensive : Validation Réseau avec Zod
 
-Pour éviter que des changements de format ou des régressions inattendues dans le backend Laravel 13 ne provoquent des crashs silencieux d'affichage côté client, le frontend applique un schéma de validation strict à la frontière réseau dans [src/lib/validation.ts](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/src/lib/validation.ts).
+Pour éviter que des changements de format ou des régressions inattendues dans le backend Laravel 13 ne provoquent des crashs silencieux d'affichage côté client, le frontend applique un schéma de validation strict à la frontière réseau dans [src/lib/validation.ts](/front-loicbonin/src/lib/validation.ts).
 
 ### Définition des Schémas de Validation
-Les types TypeScript de [src/lib/types.ts](file:///Users/loico/Work/MyDocs/dev/loicbonin.com/front-loicbonin/src/lib/types.ts) possèdent des schémas de validation Zod stricts :
+
+Les types TypeScript de [src/lib/types.ts](/front-loicbonin/src/lib/types.ts) possèdent des schémas de validation Zod stricts :
 
 ```typescript
-import { z } from 'zod'
+import { z } from "zod";
 
 // Correspond au contrat d'API du backend Laravel
-export const ULIDSchema = z.string().regex(/^[0-9A-HJKMNP-TV-Z]{26}$/i, "Format ULID invalide")
-export const DateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide (YYYY-MM-DD)")
+export const ULIDSchema = z
+  .string()
+  .regex(/^[0-9A-HJKMNP-TV-Z]{26}$/i, "Format ULID invalide");
+export const DateStringSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide (YYYY-MM-DD)");
 
 export const ArticleSchema = z.object({
-  id: ULIDSchema,                  // Validation du format ULID de 26 caractères
+  id: ULIDSchema, // Validation du format ULID de 26 caractères
   slug: z.string(),
   title: z.string(),
   excerpt: z.string(),
-  content: z.string(),            // Markdown brut retourné par le backend
-  category: z.string(),           // Nom ou slug de la catégorie
-  tags: z.array(z.string()),      // Liste des tags associés
-  publishedAt: DateStringSchema,  // Date de publication stricte (YYYY-MM-DD)
+  content: z.string(), // Markdown brut retourné par le backend
+  category: z.string(), // Nom ou slug de la catégorie
+  tags: z.array(z.string()), // Liste des tags associés
+  publishedAt: DateStringSchema, // Date de publication stricte (YYYY-MM-DD)
   readingTime: z.number().nonnegative(),
   featured: z.boolean().optional(),
-})
+});
 ```
 
 ---
@@ -53,11 +58,20 @@ Afin d'unifier la gestion des erreurs de typage à l'exécution, le client d'API
 ```typescript
 // src/lib/api.ts
 
-function validateData<T>(schema: z.ZodType<T>, data: unknown, contextName: string): T {
+function validateData<T>(
+  schema: z.ZodType<T>,
+  data: unknown,
+  contextName: string,
+): T {
   const parsed = schema.safeParse(data);
   if (!parsed.success) {
-    console.error(`[API Network Frontier Validation Error in ${contextName}]:`, parsed.error.format());
-    throw new Error(`La validation réseau de l'API a échoué pour : ${contextName}`);
+    console.error(
+      `[API Network Frontier Validation Error in ${contextName}]:`,
+      parsed.error.format(),
+    );
+    throw new Error(
+      `La validation réseau de l'API a échoué pour : ${contextName}`,
+    );
   }
   return parsed.data;
 }
@@ -89,11 +103,10 @@ Puisque le site de veille est essentiellement destiné à la lecture de contenu,
 
 L'explorateur de code (`/code`) interroge le backend Laravel pour obtenir la liste des projets de code disponibles ainsi que leur arborescence récursive :
 
-* **Endpoints utilisés** :
-  * `GET /api/v1/code/projects` : Liste les projets (nom, description, slug).
-  * `GET /api/v1/code/projects/{slug}/tree` : Récupère l'arborescence complète (dossiers, fichiers et articles liés) pour le projet spécifié.
-  * `GET /api/v1/code/files/{path}` : Récupère le contenu brut et les métadonnées d'un fichier de code spécifique.
+- **Endpoints utilisés** :
+  - `GET /api/v1/code/projects` : Liste les projets (nom, description, slug).
+  - `GET /api/v1/code/projects/{slug}/tree` : Récupère l'arborescence complète (dossiers, fichiers et articles liés) pour le projet spécifié.
+  - `GET /api/v1/code/files/{path}` : Récupère le contenu brut et les métadonnées d'un fichier de code spécifique.
 
-* **Mécanisme de repli (Fallback)** :
+- **Mécanisme de repli (Fallback)** :
   En cas d'indisponibilité du serveur Laravel ou lors du build statique initial, le client d'API bascule automatiquement sur des données mockées locales (`MOCK_CODE_PROJECTS` et `MOCK_CODE_TREE`) afin d'assurer la résilience de l'application.
-
