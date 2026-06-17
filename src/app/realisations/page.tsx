@@ -1,4 +1,5 @@
 import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { getProjects } from '@/lib/api'
 import type { Project } from '@/lib/types'
 
@@ -208,6 +209,8 @@ export default async function RealisationsPage() {
           ))}
         </div>
       </main>
+
+      <Footer />
 
       <style>{`
         .small-project-card {

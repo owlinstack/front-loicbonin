@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { ArticleProse } from '@/components/article/ArticleProse'
 import { ReadingProgress } from '@/components/ui/ReadingProgress'
 import { getArticleBySlug } from '@/lib/api'
@@ -43,6 +44,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             Article introuvable.
           </p>
         </main>
+        <Footer />
       </div>
     )
   }
@@ -148,6 +150,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
         )}
       </main>
+
+      <Footer />
 
       <style>{`
         .back-link {

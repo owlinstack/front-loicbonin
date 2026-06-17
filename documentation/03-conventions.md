@@ -105,6 +105,7 @@ La visibilité dans les moteurs de recherche et l'accessibilité sont des priori
   - `<aside>` pour les éléments latéraux ou secondaires (barre latérale de filtrage).
   - `<article>` pour entourer chaque carte d'article ou projet indépendant.
   - `<nav>` pour structurer les listes de liens et les filtres.
+  - `<footer>` pour la barre d'information et de navigation de bas de page.
 
 ### 2. Métadonnées Statiques et Dynamiques (Metadata)
 
@@ -127,6 +128,12 @@ La visibilité dans les moteurs de recherche et l'accessibilité sont des priori
 ### 3. Identifiants Uniques pour les Tests et Automatisation
 
 - Chaque élément interactif de premier plan (ThemeToggle, boutons de filtre, pagination, champ d'édition de code) doit obligatoirement posséder un attribut `id` unique et stable pour simplifier les tests d'intégration, de bout en bout, et pour améliorer la navigation par raccourcis ou claviers.
+
+### 4. Composants Structuraux de Layout (Header, Footer)
+
+- **Header** : Il affiche l'identité textuelle "Loïc Bonin" liée à l'accueil, la barre de navigation principale, et le bouton de bascule de thème. Un bouton burger réactif est utilisé sur mobile pour afficher un tiroir de navigation (`drawer`).
+- **Footer** : Le pied de page s'affiche en bas de toutes les pages de contenu (Veille, Profil, Réalisations, Articles). Il doit obligatoirement utiliser la balise sémantique `<footer>`, structurer ses colonnes de liens avec des balises `<nav>`, et comporter des attributs `id` uniques pour chaque lien interactif (ex : `footer-nav-veille`, `footer-social-github`). Le survol de ses liens est exclusivement géré en CSS pur pour respecter les performances RSC.
+
 
 ---
 

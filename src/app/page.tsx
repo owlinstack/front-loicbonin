@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Aside } from "@/components/layout/Aside";
 import { ArticleGrid } from "@/components/article/ArticleGrid";
@@ -72,6 +73,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <Aside />
         </div>
       </main>
+
+      <Footer />
 
       <style>{`
         .sidebar-wrap { display: none; }

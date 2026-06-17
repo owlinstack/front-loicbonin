@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import { getProfile } from "@/lib/api";
 
@@ -291,6 +292,8 @@ export default async function ProfilPage() {
           </a>
         )}
       </main>
+
+      <Footer />
 
       <style>{`
         .cv-link {
