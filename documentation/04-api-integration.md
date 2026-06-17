@@ -110,3 +110,34 @@ L'explorateur de code (`/code`) interroge le backend Laravel pour obtenir la lis
 
 - **Mécanisme de repli (Fallback)** :
   En cas d'indisponibilité du serveur Laravel ou lors du build statique initial, le client d'API bascule automatiquement sur des données mockées locales (`MOCK_CODE_PROJECTS` et `MOCK_CODE_TREE`) afin d'assurer la résilience de l'application.
+
+---
+
+## 🔗 Liaison Articles & Code Source (Intégration & Redirection)
+
+Le projet implémente une liaison bidirectionnelle stricte entre les articles de veille technologique et l'explorateur de code source.
+
+### 1. Structure de Données de l'API (Article + Code)
+
+Le backend Laravel 13 retourne les objets de code associés directement dans la structure de l'article sous trois clés facultatives :
+* `codeFile` : Objet représentant un fichier de code unique (`name`, `path`, `language`, `content`, `projectSlug`).
+* `codeFolder` : Objet représentant un dossier (et ses sous-dossiers/fichiers récursifs).
+* `codeProject` : Objet représentant le projet de code lié complet.
+
+Ces données sont validées à l'exécution par Zod sur le frontend (`ArticleSchema`) et typées rigoureusement dans `types.ts`.
+
+### 2. Aperçu du Code Source et Coloration Unifiée
+
+* **Coloration des blocs de code** : Tout bloc de code saisi en Markdown (ex : ` ```typescript `) ou issu d'un fichier lié est parsé par `<ArticleProse />` ou rendu par `<AssociatedCodeSection />` en utilisant le composant `<HighlightedCode />` du frontend. Cela assure l'application de la même palette de couleurs (mode sombre/clair) "Watercolor" que celle utilisée dans l'onglet principal de Code.
+* **Composant `<AssociatedCodeSection />`** : Si un code source est lié à l'article, un bouton rétractable "Code source associé (...)" s'affiche en fin d'article. Au clic, le code du fichier (ou le premier fichier du dossier/projet) s'affiche directement dans un volet avec coloration syntaxique.
+
+### 3. Redirection Interactive avec Paramètres de Requête
+
+Le composant d'aperçu de code inclut un bouton d'action **"Ouvrir dans l'explorateur de code ↗"** qui redirige l'utilisateur vers :
+`/code?project={projectSlug}&file={filePath}`
+
+L'explorateur de code (`<CodeEditorClient />`) :
+1. Détecte la présence de ces paramètres de requête (`project` et `file`) via `useSearchParams()`.
+2. Résout le projet et lance automatiquement la récupération asynchrone de son arborescence de fichiers.
+3. Repère le fichier ciblé par le paramètre `file` dans l'arborescence, l'active et l'affiche directement dans l'éditeur.
+

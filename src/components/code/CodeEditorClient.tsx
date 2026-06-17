@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { FileTree } from '@/components/code/FileTree'
 import { CodeViewer } from '@/components/code/CodeViewer'
 import { ProjectGrid } from '@/components/code/ProjectGrid'
@@ -40,7 +41,11 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
     return () => obs.disconnect()
   }, [])
 
-  const handleSelectProject = async (project: CodeProject) => {
+  const searchParams = useSearchParams()
+  const projectSlug = searchParams.get('project')
+  const fileParam = searchParams.get('file')
+
+  const handleSelectProject = async (project: CodeProject, fileToSelect?: string | null) => {
     setIsLoading(true)
     setActiveProject(project)
     try {
@@ -48,7 +53,10 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
       setActiveTree(tree)
       const files = flattenFiles(tree)
       if (files.length > 0) {
-        setActiveFile(files[0])
+        const matchingFile = fileToSelect
+          ? files.find((f) => f.path === fileToSelect)
+          : null
+        setActiveFile(matchingFile || files[0])
       } else {
         setActiveFile(null)
       }
@@ -59,6 +67,19 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
       setIsLoading(false)
     }
   }
+
+  // Load project from query parameters on load
+  useEffect(() => {
+    if (projectSlug && projects.length > 0) {
+      const found = projects.find((p) => p.slug === projectSlug)
+      if (found) {
+        const timer = setTimeout(() => {
+          handleSelectProject(found, fileParam)
+        }, 0)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [projectSlug, fileParam, projects])
 
   const handleSelectTree = (file: CodeFile) => {
     setActiveFile(file)

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ArticleProse } from '@/components/article/ArticleProse'
+import { AssociatedCodeSection } from '@/components/article/AssociatedCodeSection'
 import { ReadingProgress } from '@/components/ui/ReadingProgress'
 import { getArticleBySlug } from '@/lib/api'
 
@@ -125,6 +126,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         {/* Prose */}
         <ArticleProse content={article.content} />
+
+        {/* Code source associé dépliable */}
+        <AssociatedCodeSection article={article} />
 
         {/* Tags */}
         {article.tags.length > 0 && (
