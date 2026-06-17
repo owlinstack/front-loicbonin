@@ -43,9 +43,19 @@ export function Header() {
         <Link
           href="/"
           aria-label="Loïc Bonin — accueil"
-          style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexShrink: 0,
+            fontFamily: 'var(--font-sans)',
+            fontSize: 'var(--text-lg)',
+            fontWeight: 600,
+            letterSpacing: '-0.02em',
+            textDecoration: 'none',
+            color: 'var(--color-text)',
+          }}
         >
-          <LBMonogram />
+          Loïc Bonin
         </Link>
 
         {/* Desktop nav — centered absolutely so logo/actions don't fight */}
@@ -129,7 +139,17 @@ export function Header() {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-          <LBMonogram />
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 'var(--text-lg)',
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+              color: 'var(--color-text)',
+            }}
+          >
+            Loïc Bonin
+          </span>
           <button
             onClick={() => setDrawerOpen(false)}
             aria-label="Fermer le menu"
@@ -175,25 +195,5 @@ export function Header() {
         }
       `}</style>
     </>
-  )
-}
-
-function LBMonogram() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      style={{ color: 'var(--color-text)' }}
-    >
-      <polyline points="4,4 4,20 11,20" />
-      <path d="M13,4 L13,20 M13,4 L18,4 Q21,4 21,7.5 Q21,11 13,11 M13,11 L18,11 Q21,11 21,15.5 Q21,20 13,20" />
-    </svg>
   )
 }

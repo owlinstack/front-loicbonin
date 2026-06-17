@@ -30,11 +30,8 @@ export function Sidebar({
       }}
     >
       {/* Site name */}
-      <Link
-        href="/"
-        className="sidebar-logo-link"
-      >
-        Loïc Bonin
+      <Link href="/" className="sidebar-logo-link">
+        Veille
       </Link>
 
       {/* Categories */}
@@ -51,7 +48,8 @@ export function Sidebar({
         >
           {visibleCategories.map((cat) => {
             const active = activeCategory === cat.slug;
-            const targetHref = cat.slug === "all" ? "/" : `/?category=${cat.slug}`;
+            const targetHref =
+              cat.slug === "all" ? "/" : `/?category=${cat.slug}`;
             return (
               <li key={cat.slug}>
                 <Link
@@ -86,7 +84,11 @@ export function Sidebar({
       </nav>
 
       {/* Tag panel */}
-      <TagPanel tags={tags} activeCategory={activeCategory} activeTag={activeTag} />
+      <TagPanel
+        tags={tags}
+        activeCategory={activeCategory}
+        activeTag={activeTag}
+      />
 
       <style>{`
         .sidebar-logo-link {
