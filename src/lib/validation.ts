@@ -97,3 +97,10 @@ export const PaginatedArticlesSchema = z.object({
   page: z.number().int().positive(),
   pageSize: z.number().int().positive(),
 });
+
+export const CodeProjectSchema = z.object({
+  id: ULIDSchema,
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().optional().nullable(),
+});

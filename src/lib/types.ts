@@ -76,3 +76,11 @@ export interface PaginatedArticles {
 }
 
 export type Tag = string
+
+export interface CodeProject {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+}
+

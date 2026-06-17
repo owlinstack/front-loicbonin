@@ -7,6 +7,7 @@ import type {
   Profile,
   Project,
   Tag,
+  CodeProject,
 } from "./types";
 import { z } from "zod";
 import {
@@ -17,6 +18,7 @@ import {
   CodeTreeSchema,
   ProfileSchema,
   PaginatedArticlesSchema,
+  CodeProjectSchema,
 } from "./validation";
 
 // Simplification: Mock de données en mémoire.
@@ -199,6 +201,15 @@ const MOCK_PROJECTS: Project[] = [
       "Lead Dev Fullstack & Architecture (Freelance + CDD) : conception de A à Z et mise en production de la plateforme e-commerce internationale.",
     techStack: ["Sylius", "Symfony", "Twig"],
     liveUrl: "https://solecooler.com",
+  },
+];
+
+const MOCK_CODE_PROJECTS: CodeProject[] = [
+  {
+    id: "01ARZ3NDEKTSV4RRFFQ69G5FAB",
+    name: "Filament Core Project",
+    slug: "filament-core-project",
+    description: "Un projet regroupant toute l'architecture de base de nos panels d'administration.",
   },
 ];
 
@@ -786,26 +797,63 @@ export async function getProjects(): Promise<Project[]> {
   return validateData(z.array(ProjectSchema), MOCK_PROJECTS, "getProjects");
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+export async function getCodeProjects(): Promise<CodeProject[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/code/projects`, { next: { revalidate: 300 } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return validateData(z.array(CodeProjectSchema), data, "getCodeProjects");
+  } catch (err) {
+    console.warn("[API Fallback] getCodeProjects failed, using local mock data:", err);
+    return validateData(z.array(CodeProjectSchema), MOCK_CODE_PROJECTS, "getCodeProjects (Mock)");
+  }
+}
+
+export async function getCodeProjectTree(slug: string): Promise<CodeTree> {
+  try {
+    const res = await fetch(`${BASE_URL}/code/projects/${slug}/tree`, { next: { revalidate: 300 } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return validateData(CodeTreeSchema, data, "getCodeProjectTree");
+  } catch (err) {
+    console.warn(`[API Fallback] getCodeProjectTree for slug ${slug} failed, using local mock data:`, err);
+    return validateData(CodeTreeSchema, MOCK_CODE_TREE, "getCodeProjectTree (Mock)");
+  }
+}
+
 export async function getCodeTree(): Promise<CodeTree> {
   await new Promise((r) => setTimeout(r, 100));
   return validateData(CodeTreeSchema, MOCK_CODE_TREE, "getCodeTree");
 }
 
 export async function getCodeFile(path: string): Promise<CodeFile | null> {
-  await new Promise((r) => setTimeout(r, 100));
-  const findFile = (tree: CodeTree): CodeFile | null => {
-    for (const node of tree) {
-      if ("children" in node) {
-        const found = findFile(node.children);
-        if (found) return found;
-      } else if (node.path === path) {
-        return node;
-      }
+  try {
+    const res = await fetch(`${BASE_URL}/code/files/${path}`, { next: { revalidate: 300 } });
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new Error(`HTTP ${res.status}`);
     }
-    return null;
-  };
-  const data = findFile(MOCK_CODE_TREE);
-  return validateData(CodeFileSchema.nullable(), data, "getCodeFile");
+    const json = await res.json();
+    const rawData = json.data ?? json;
+    return validateData(CodeFileSchema.nullable(), rawData, "getCodeFile");
+  } catch (err) {
+    console.warn(`[API Fallback] getCodeFile for path ${path} failed, using local mock data:`, err);
+    const findFile = (tree: CodeTree): CodeFile | null => {
+      for (const node of tree) {
+        if ("children" in node) {
+          const found = findFile(node.children);
+          if (found) return found;
+        } else if (node.path === path) {
+          return node;
+        }
+      }
+      return null;
+    };
+    const data = findFile(MOCK_CODE_TREE);
+    return validateData(CodeFileSchema.nullable(), data, "getCodeFile (Mock)");
+  }
 }
 
 export async function getProfile(): Promise<Profile> {
