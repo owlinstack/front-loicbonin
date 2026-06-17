@@ -23,11 +23,11 @@ export const ProjectSchema = z.object({
   slug: z.string(),
   title: z.string(),
   description: z.string(),
-  longDescription: z.string().optional(),
+  longDescription: z.string().optional().nullable(),
   techStack: z.array(z.string()),
-  liveUrl: z.string().optional(),
-  repoUrl: z.string().optional(),
-  featured: z.boolean().optional(),
+  liveUrl: z.string().optional().nullable(),
+  repoUrl: z.string().optional().nullable(),
+  featured: z.boolean().optional().nullable(),
 });
 
 export const CodeProjectSchema = z.object({
@@ -42,9 +42,9 @@ export const CodeFileSchema = z.object({
   path: z.string(),
   language: z.string(),
   content: z.string(),
-  linkedArticleSlug: z.string().optional(),
-  linkedArticleTitle: z.string().optional(),
-  projectSlug: z.string().optional(),
+  linkedArticleSlug: z.string().optional().nullable(),
+  linkedArticleTitle: z.string().optional().nullable(),
+  projectSlug: z.string().optional().nullable(),
 });
 
 // Recursive schema for folder validation using z.lazy
@@ -54,7 +54,7 @@ export const CodeFolderSchema: z.ZodType<CodeFolder> = z.object({
   children: z.array(
     z.lazy(() => z.union([CodeFileSchema, CodeFolderSchema]))
   ),
-  projectSlug: z.string().optional(),
+  projectSlug: z.string().optional().nullable(),
 });
 
 export const CodeTreeSchema = z.array(
@@ -84,7 +84,7 @@ export const ProfileSchema = z.object({
   ),
   timeline: z.array(ProfileTimelineSchema),
   education: z.array(ProfileEducationSchema),
-  cvUrl: z.string().optional(),
+  cvUrl: z.string().optional().nullable(),
   avatarUrl: z.string().optional().nullable(),
 });
 
@@ -96,9 +96,9 @@ export const ArticleSchema = z.object({
   content: z.string(),
   category: z.string(),
   tags: z.array(z.string()),
-  publishedAt: DateStringSchema,
+  publishedAt: DateStringSchema.nullable(),
   readingTime: z.number().nonnegative(),
-  featured: z.boolean().optional(),
+  featured: z.boolean().optional().nullable(),
   codeFile: CodeFileSchema.optional().nullable(),
   codeFolder: z.lazy(() => CodeFolderSchema).optional().nullable(),
   codeProject: CodeProjectSchema.optional().nullable(),

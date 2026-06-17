@@ -5,7 +5,8 @@ interface ArticleFeaturedProps {
   article: Article
 }
 
-function formatDate(iso: string) {
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return 'Non publié'
   return new Date(iso).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'long',

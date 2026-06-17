@@ -42,7 +42,7 @@ export async function generateMetadata({
       url: url,
       siteName: 'Loïc Bonin',
       type: 'article',
-      publishedTime: article.publishedAt,
+      publishedTime: article.publishedAt || undefined,
       authors: ['Loïc Bonin'],
       tags: article.tags,
     },
@@ -54,7 +54,8 @@ export async function generateMetadata({
   }
 }
 
-function formatDate(iso: string) {
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return 'Non publié'
   return new Date(iso).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'long',
@@ -99,7 +100,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     '@type': 'BlogPosting',
     headline: article.title,
     description: article.excerpt,
-    datePublished: article.publishedAt,
+    datePublished: article.publishedAt || undefined,
     author: {
       '@type': 'Person',
       name: 'Loïc Bonin',

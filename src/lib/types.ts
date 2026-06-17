@@ -6,9 +6,9 @@ export interface Article {
   content: string
   category: string
   tags: string[]
-  publishedAt: string
+  publishedAt: string | null
   readingTime: number // in minutes
-  featured?: boolean
+  featured?: boolean | null
   codeFile?: CodeFile | null
   codeFolder?: CodeFolder | null
   codeProject?: CodeProject | null
@@ -25,11 +25,11 @@ export interface Project {
   slug: string
   title: string
   description: string
-  longDescription?: string
+  longDescription?: string | null
   techStack: string[]
-  liveUrl?: string
-  repoUrl?: string
-  featured?: boolean
+  liveUrl?: string | null
+  repoUrl?: string | null
+  featured?: boolean | null
 }
 
 export interface CodeFile {
@@ -37,16 +37,16 @@ export interface CodeFile {
   path: string
   language: string
   content: string
-  linkedArticleSlug?: string
-  linkedArticleTitle?: string
-  projectSlug?: string
+  linkedArticleSlug?: string | null
+  linkedArticleTitle?: string | null
+  projectSlug?: string | null
 }
 
 export interface CodeFolder {
   name: string
   path: string
   children: (CodeFile | CodeFolder)[]
-  projectSlug?: string
+  projectSlug?: string | null
 }
 
 export type CodeTree = (CodeFile | CodeFolder)[]
