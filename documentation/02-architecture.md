@@ -18,7 +18,10 @@ front-loicbonin/
 │   │   ├── realisations/     # Galerie des projets réalisés (RSC)
 │   │   ├── globals.css       # Design tokens et système de design CSS global
 │   │   ├── layout.tsx        # Layout racine (initialisation du thème et SEO)
-│   │   └── page.tsx          # Page d'accueil (flux d'articles, catégories et filtres RSC)
+│   │   ├── manifest.ts       # Manifeste de l'application (PWA/SEO)
+│   │   ├── page.tsx          # Page d'accueil (flux d'articles, catégories et filtres RSC)
+│   │   ├── robots.ts         # Fichier robots.txt dynamique
+│   │   └── sitemap.ts        # Sitemap XML dynamique
 │   │
 │   ├── components/           # Composants réutilisables découpés par domaine
 │   │   ├── article/          # Cartes d'articles, articles mis en avant, etc.

@@ -14,25 +14,45 @@ Le projet intègre **Tailwind CSS v4** qui utilise des imports natifs CSS pour c
 
 ### 2. Design Tokens Globaux
 
-Tous les tokens de design (couleurs, polices, tailles de texte réactives) sont définis en CSS pur sous forme de variables globales (`:root`) dans [globals.css](/front-loicbonin/src/app/globals.css).
+Tous les tokens de design sont définis dans [globals.css](../src/app/globals.css). Pour respecter les standards de **Tailwind CSS v4** :
+- Les configurations de thèmes personnalisés (familles de polices et tailles de textes fluides) sont déclarées via la directive `@theme inline` de Tailwind.
+- Les propriétés de style dynamiques (couleurs, épaisseurs de titres) sont définies sous forme de variables CSS dans `:root` (thème sombre par défaut) et surchargées dans le bloc `[data-theme='light']`.
 
 ```css
-:root {
-  /* Typography */
-  --font-display: "Editorial New", Georgia, serif;
+@theme inline {
+  --font-display: 'Editorial New', 'Georgia', serif;
   --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", monospace;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
 
-  /* Fluid typography */
   --text-xs: clamp(0.75rem, 0.7rem + 0.15vw, 0.8125rem);
   --text-sm: clamp(0.875rem, 0.82rem + 0.2vw, 0.9375rem);
   --text-base: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --text-lg: clamp(1.25rem, 1.1rem + 0.8vw, 1.75rem);
+  --text-xl: clamp(1.75rem, 1.3rem + 1.5vw, 2.75rem);
+  --text-hero: clamp(2.5rem, 1.5rem + 3.5vw, 4.5rem);
+}
 
-  /* Color Palette - Dark (Default) */
+:root {
+  /* Sublime Dark (default) */
   --color-bg: #0c0c0b;
   --color-surface: #131312;
   --color-text: #e8e6e1;
+  --color-text-muted: #6b6966;
+  --color-accent: #e8e6e1;
   --color-border: rgba(255, 255, 255, 0.07);
+  --color-teal: #01696f;
+  --heading-weight: 450;
+}
+
+[data-theme='light'] {
+  --color-bg: #f9f8f6;
+  --color-surface: #ffffff;
+  --color-text: #1a1917;
+  --color-text-muted: #8a8784;
+  --color-accent: #1a1917;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-teal: #01696f;
+  --heading-weight: 450;
 }
 ```
 
@@ -58,7 +78,7 @@ Pour respecter les contraintes de rendu des React Server Components (qui interdi
 Pour offrir une expérience premium, la bascule de thème évite tout clignotement ou flash blanc lors du rechargement de la page :
 
 1. **Persistance** : Le choix de l'utilisateur est stocké dans le `localStorage` sous la clé `lb-theme`.
-2. **Application Synchrone via script natif** : Afin d'éviter le flash visuel pendant que React charge, un script synchrone ultra-léger et bloquant est configuré directement via une balise `<script>` native. Il est placé au début du `<body>` dans [layout.tsx](/front-loicbonin/src/app/layout.tsx) :
+2. **Application Synchrone via script natif** : Afin d'éviter le flash visuel pendant que React charge, un script synchrone ultra-léger et bloquant est configuré directement via une balise `<script>` native. Il est placé au début du `<body>` dans [layout.tsx](../src/app/layout.tsx) :
 
    ```tsx
    export default function RootLayout({
