@@ -25,9 +25,9 @@ export function ThemeToggle() {
     applyTheme(next);
     setTheme(next);
   };
-
   return (
     <button
+      id="theme-toggle"
       onClick={handleToggle}
       aria-label="Basculer le thème"
       style={{
