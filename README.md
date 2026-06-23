@@ -1,6 +1,6 @@
 # loicbonin.com — Frontend (Next.js)
 
-Dépôt front-end officiel du site et blog de veille technologique de **Loïc Bonin**, développeur full-stack. Construit avec des technologies modernes et performantes de l'écosystème React et Next.js (2026), ce projet se distingue par sa sobriété esthétique, sa fluidité et sa rigueur architecturale.
+Dépôt front-end officiel du site et blog de veille technologique de **Loïc Bonin**, développeur full-stack. Construit avec Next.js.
 
 Le backend associé est propulsé par [Laravel](https://laravel.com).
 
@@ -12,7 +12,7 @@ Le backend associé est propulsé par [Laravel](https://laravel.com).
 - **Réalisations / Projets** : Liste des projets phares avec tags, descriptions et liens de démonstration.
 - **Explorateur de Code Interactif** : Visualisation de l'arborescence des fichiers du projet directement dans l'application avec coloration syntaxique moderne (Shiki).
 - **Blog de Veille Technologique** : Articles de blog classés par catégories et mots-clés (tags).
-- **Gestion Sombre / Clair Native** : Transition sans flash lumineux à l'aide des CSS variables modernes.
+- **Gestion Sombre / Clair Native** : Thèmes clair et sombre à l'aide des CSS variables modernes.
 - **Validation Strict à la Frontière** : Validation défensive des types de données reçus de l'API Laravel en utilisant des schémas de validation [Zod](https://zod.dev).
 
 ---
