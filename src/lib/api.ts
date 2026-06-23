@@ -686,6 +686,7 @@ const MOCK_PROFILE: Profile = {
         "Suivi régulier des évolutions des outils, normes et Framework via source primaire (documentation). Veille active journalière sur l'évolution et l'utilisation des outils IA.",
     },
   ],
+  showTimeline: true,
   timeline: [
     {
       date: "2021 — présent",
@@ -712,6 +713,7 @@ const MOCK_PROFILE: Profile = {
         "Enseignement d'un module d'initiation au développement web: premiers pas, bonnes pratiques, git, création portfolio.",
     },
   ],
+  showEducation: true,
   education: [
     {
       date: "2018 — 2019",

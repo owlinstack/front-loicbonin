@@ -82,8 +82,10 @@ export const ProfileSchema = z.object({
       description: z.string(),
     })
   ),
-  timeline: z.array(ProfileTimelineSchema),
-  education: z.array(ProfileEducationSchema),
+  showTimeline: z.boolean().optional().nullable(),
+  timeline: z.array(ProfileTimelineSchema).nullable(),
+  showEducation: z.boolean().optional().nullable(),
+  education: z.array(ProfileEducationSchema).nullable(),
   cvUrl: z.string().optional().nullable(),
   avatarUrl: z.string().optional().nullable(),
 });

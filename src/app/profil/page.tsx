@@ -14,6 +14,8 @@ export const metadata: Metadata = {
 
 export default async function ProfilPage() {
   const profile = await getProfile();
+  const timeline = profile.timeline ?? [];
+  const education = profile.education ?? [];
 
   const personSchema = {
     '@context': 'https://schema.org',
@@ -162,81 +164,85 @@ export default async function ProfilPage() {
           </dl>
         </section>
 
-        <hr
-          style={{
-            border: "none",
-            borderTop: "1px solid var(--color-border)",
-            marginBottom: 48,
-          }}
-        />
+        {profile.showTimeline !== false && timeline.length > 0 && (
+          <>
+            <hr
+              style={{
+                border: "none",
+                borderTop: "1px solid var(--color-border)",
+                marginBottom: 48,
+              }}
+            />
 
-        {/* Timeline */}
-        <section aria-label="Parcours" style={{ marginBottom: 64 }}>
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "var(--text-xs)",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "var(--color-text-muted)",
-              marginBottom: 32,
-            }}
-          >
-            Parcours
-          </p>
-          <ol style={{ listStyle: "none" }}>
-            {profile.timeline.map((item, i) => (
-              <li
-                key={i}
+            {/* Timeline */}
+            <section aria-label="Parcours" style={{ marginBottom: 64 }}>
+              <p
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "140px 1fr",
-                  gap: "0 32px",
-                  marginBottom: i < profile.timeline.length - 1 ? 32 : 0,
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "var(--text-xs)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-muted)",
+                  marginBottom: 32,
                 }}
               >
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "var(--text-xs)",
-                    color: "var(--color-text-muted)",
-                    letterSpacing: "0.04em",
-                    paddingTop: 3,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {item.date}
-                </span>
-                <div>
-                  <p
+                Parcours
+              </p>
+              <ol style={{ listStyle: "none" }}>
+                {timeline.map((item, i) => (
+                  <li
+                    key={i}
                     style={{
-                      fontFamily: "var(--font-sans)",
-                      fontSize: "var(--text-sm)",
-                      fontWeight: 600,
-                      color: "var(--color-text)",
-                      marginBottom: 4,
-                      lineHeight: 1.4,
+                      display: "grid",
+                      gridTemplateColumns: "140px 1fr",
+                      gap: "0 32px",
+                      marginBottom: i < timeline.length - 1 ? 32 : 0,
                     }}
                   >
-                    {item.title}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      fontSize: "var(--text-sm)",
-                      color: "var(--color-text-muted)",
-                      lineHeight: 1.65,
-                    }}
-                  >
-                    {item.description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-text-muted)",
+                        letterSpacing: "0.04em",
+                        paddingTop: 3,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {item.date}
+                    </span>
+                    <div>
+                      <p
+                        style={{
+                          fontFamily: "var(--font-sans)",
+                          fontSize: "var(--text-sm)",
+                          fontWeight: 600,
+                          color: "var(--color-text)",
+                          marginBottom: 4,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {item.title}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: "var(--font-sans)",
+                          fontSize: "var(--text-sm)",
+                          color: "var(--color-text-muted)",
+                          lineHeight: 1.65,
+                        }}
+                      >
+                        {item.description}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </>
+        )}
 
-        {profile.education && profile.education.length > 0 && (
+        {profile.showEducation !== false && education.length > 0 && (
           <>
             <hr
               style={{
@@ -261,14 +267,14 @@ export default async function ProfilPage() {
                 Éducation
               </p>
               <ol style={{ listStyle: "none" }}>
-                {profile.education.map((item, i) => (
+                {education.map((item, i) => (
                   <li
                     key={i}
                     style={{
                       display: "grid",
                       gridTemplateColumns: "140px 1fr",
                       gap: "0 32px",
-                      marginBottom: i < profile.education.length - 1 ? 32 : 0,
+                      marginBottom: i < education.length - 1 ? 32 : 0,
                     }}
                   >
                     <span

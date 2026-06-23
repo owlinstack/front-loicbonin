@@ -67,8 +67,10 @@ export interface Profile {
   name: string
   bio: string
   skills: { term: string; description: string }[]
-  timeline: ProfileTimeline[]
-  education: ProfileEducation[]
+  showTimeline?: boolean | null
+  timeline: ProfileTimeline[] | null
+  showEducation?: boolean | null
+  education: ProfileEducation[] | null
   cvUrl?: string | null
   avatarUrl?: string | null
 }
