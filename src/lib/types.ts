@@ -30,6 +30,7 @@ export interface Project {
   liveUrl?: string | null
   repoUrl?: string | null
   featured?: boolean | null
+  year?: string | null
 }
 
 export interface CodeFile {

@@ -28,6 +28,7 @@ export const ProjectSchema = z.object({
   liveUrl: z.string().optional().nullable(),
   repoUrl: z.string().optional().nullable(),
   featured: z.boolean().optional().nullable(),
+  year: z.string().optional().nullable(),
 });
 
 export const CodeProjectSchema = z.object({

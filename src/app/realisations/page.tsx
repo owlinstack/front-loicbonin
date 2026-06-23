@@ -64,6 +64,18 @@ function FeaturedProject({ project }: { project: Project }) {
         }}
       >
         {project.title}
+        {project.year && (
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text-muted)',
+              marginLeft: 12,
+            }}
+          >
+            {project.year}
+          </span>
+        )}
       </h2>
 
       {project.longDescription && (
@@ -119,6 +131,18 @@ function SmallProject({ project }: { project: Project }) {
         }}
       >
         {project.title}
+        {project.year && (
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text-muted)',
+              marginLeft: 8,
+            }}
+          >
+            {project.year}
+          </span>
+        )}
       </h3>
       <p
         style={{

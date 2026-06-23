@@ -165,6 +165,7 @@ const MOCK_PROJECTS: Project[] = [
     techStack: ["Next.js", "PayloadCMS", "Stripe"],
     liveUrl: "https://jpprat-livres.fr",
     featured: true,
+    year: "2024",
   },
   {
     id: "01H7B3Q9N8472M6YV6N7R0G5Z2",
@@ -174,6 +175,7 @@ const MOCK_PROJECTS: Project[] = [
       "Réalisation d'une application web sous Next.js interconnectée avec l'API REST de Wix et gestion complète de l'infrastructure d'hébergement.",
     techStack: ["Next.js", "Wix API"],
     liveUrl: "https://agencefleurbleue.fr",
+    year: "2023",
   },
   {
     id: "01H7B3Q9N8472M6YV6N7R0G5Z3",
@@ -183,6 +185,7 @@ const MOCK_PROJECTS: Project[] = [
       "SaaS de Streaming Audio : développement d'un catalogue de diffusion de mes musiques. Architecture Laravel / Vue.js, optimisation de chargement des médias, sécurité et hébergement.",
     techStack: ["Laravel", "Vue.js"],
     liveUrl: "https://koniplay.com",
+    year: "2024",
   },
   {
     id: "01H7B3Q9N8472M6YV6N7R0G5Z4",
@@ -192,6 +195,7 @@ const MOCK_PROJECTS: Project[] = [
       "Refonte Vitrine & Performance Web : modernisation complète sous Next.js. Optimisation du SEO technique, des métriques d'accessibilité (Core Web Vitals) et configuration de l'infrastructure d'hébergement.",
     techStack: ["Next.js", "SEO", "Core Web Vitals"],
     liveUrl: "https://owlinstack.com",
+    year: "2025",
   },
   {
     id: "01H7B3Q9N8472M6YV6N7R0G5Z5",
@@ -201,6 +205,7 @@ const MOCK_PROJECTS: Project[] = [
       "Lead Dev Fullstack & Architecture (Freelance + CDD) : conception de A à Z et mise en production de la plateforme e-commerce internationale.",
     techStack: ["Sylius", "Symfony", "Twig"],
     liveUrl: "https://solecooler.com",
+    year: "2024",
   },
 ];
 
