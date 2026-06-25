@@ -242,6 +242,57 @@ export function ArticleProse({ content }: ArticleProseProps) {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    const fetchStars = async () => {
+      const cards = document.querySelectorAll(".github-repo-card");
+      for (const card of Array.from(cards)) {
+        const href = card.getAttribute("href");
+        if (!href || card.querySelector(".github-stars")) continue;
+
+        const match = href.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+        if (!match) continue;
+
+        const owner = match[1];
+        const repo = match[2];
+        const cacheKey = `gh-stars-${owner}-${repo}`;
+
+        const renderStars = (starsStr: string) => {
+          if (card.querySelector(".github-stars")) return;
+          const starsEl = document.createElement("span");
+          starsEl.className = "github-stars";
+          starsEl.innerHTML = `<svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" style="display:inline-block;vertical-align:-1px;margin-right:4px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97 1.019 4.154a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l1.02-4.155L1.12 7.373a.75.75 0 0 1 .416-1.28l4.21-.611L7.627.668A.75.75 0 0 1 8 .25Z"></path></svg>${starsStr}`;
+          card.appendChild(starsEl);
+        };
+
+        if (typeof window !== "undefined") {
+          const cached = sessionStorage.getItem(cacheKey);
+          if (cached) {
+            renderStars(cached);
+            continue;
+          }
+        }
+
+        try {
+          const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+          if (res.ok) {
+            const data = await res.json();
+            const stars = data.stargazers_count;
+            const formatted = stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : String(stars);
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem(cacheKey, formatted);
+            }
+            renderStars(formatted);
+          }
+        } catch (e) {
+          // Ignore API/network errors
+        }
+      }
+    };
+
+    const timer = setTimeout(fetchStars, 100);
+    return () => clearTimeout(timer);
+  }, [content, theme]);
+
   const blocks = useMemo(() => parseMarkdownToBlocks(content), [content]);
 
   return (
