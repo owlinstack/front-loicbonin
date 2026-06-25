@@ -13,7 +13,8 @@ type Block =
   | { type: "p"; key: string; text: string }
   | { type: HeadingLevel; key: string; text: string }
   | { type: "blockquote"; key: string; text: string }
-  | { type: "code"; key: string; lang: string; code: string };
+  | { type: "code"; key: string; lang: string; code: string }
+  | { type: "ul" | "ol"; key: string; items: string[] };
 
 function parseMarkdownToBlocks(raw: string): Block[] {
   const lines = raw.split("\n");
@@ -103,6 +104,56 @@ function parseMarkdownToBlocks(raw: string): Block[] {
         type: "blockquote",
         key: `bq-${blocks.length}-${i}`,
         text: bqLines.join("\n"),
+      });
+      i = nextIdx;
+      continue;
+    }
+
+    // Unordered list item
+    const ulMatch = line.match(/^\s*[-*+]\s+(.+)$/);
+    if (ulMatch) {
+      flushParagraph();
+      const items = [ulMatch[1]];
+      let nextIdx = i + 1;
+      while (nextIdx < lines.length) {
+        const nextLine = lines[nextIdx];
+        const nextUlMatch = nextLine.match(/^\s*[-*+]\s+(.+)$/);
+        if (nextUlMatch) {
+          items.push(nextUlMatch[1]);
+          nextIdx++;
+        } else {
+          break;
+        }
+      }
+      blocks.push({
+        type: "ul",
+        key: `ul-${blocks.length}-${i}`,
+        items: items,
+      });
+      i = nextIdx;
+      continue;
+    }
+
+    // Ordered list item
+    const olMatch = line.match(/^\s*(\d+)\.\s+(.+)$/);
+    if (olMatch) {
+      flushParagraph();
+      const items = [olMatch[2]];
+      let nextIdx = i + 1;
+      while (nextIdx < lines.length) {
+        const nextLine = lines[nextIdx];
+        const nextOlMatch = nextLine.match(/^\s*(\d+)\.\s+(.+)$/);
+        if (nextOlMatch) {
+          items.push(nextOlMatch[2]);
+          nextIdx++;
+        } else {
+          break;
+        }
+      }
+      blocks.push({
+        type: "ol",
+        key: `ol-${blocks.length}-${i}`,
+        items: items,
       });
       i = nextIdx;
       continue;
@@ -267,6 +318,20 @@ export function ArticleProse({ content }: ArticleProseProps) {
                 </div>
               </div>
             );
+          case "ul":
+          case "ol": {
+            const Tag = block.type;
+            return (
+              <Tag key={block.key}>
+                {block.items.map((item, idx) => (
+                  <li
+                    key={`${block.key}-li-${idx}`}
+                    dangerouslySetInnerHTML={{ __html: processInline(item) }}
+                  />
+                ))}
+              </Tag>
+            );
+          }
           default:
             return null;
         }
