@@ -1,8 +1,9 @@
 # loicbonin.com — Frontend (Next.js)
 
-Dépôt front-end officiel du site et blog de veille technologique de **Loïc Bonin**, développeur full-stack. Construit avec Next.js.
+Dépôt front-end du site et blog de veille technologique de **Loïc Bonin**, développeur full-stack. Construit avec Next.js.
 
 Le backend associé est propulsé par [Laravel](https://laravel.com).
+Le code est également en accès libre ici : [api-loicbonin](https://github.com/owlinstack/api-loicbonin)
 
 ---
 
