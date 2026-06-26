@@ -1,0 +1,11 @@
+.git
+.github
+.next
+node_modules
+.pnpm-store
+.env.local
+.env
+.env.production
+.husky
+documentation
+.agents
