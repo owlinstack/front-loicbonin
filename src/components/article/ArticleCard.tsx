@@ -37,7 +37,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
               fontWeight: 500,
             }}
           >
-            {article.category}
+            {article.categories && article.categories.length > 0 ? article.categories.join(' / ') : article.category}
           </span>
           {article.tags && article.tags.length > 0 && (
             <>

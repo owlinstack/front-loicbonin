@@ -5,6 +5,7 @@ export interface Article {
   excerpt: string
   content: string
   category: string
+  categories?: string[]
   tags: string[]
   publishedAt: string | null
   readingTime: number // in minutes

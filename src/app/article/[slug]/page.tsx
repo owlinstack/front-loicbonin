@@ -157,7 +157,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             marginBottom: 16,
           }}
         >
-          {article.category}
+          {article.categories && article.categories.length > 0 ? article.categories.join(' / ') : article.category}
         </p>
 
         {/* Title */}
