@@ -103,6 +103,7 @@ export const ArticleSchema = z.object({
   publishedAt: DateStringSchema.nullable(),
   readingTime: z.number().nonnegative(),
   featured: z.boolean().optional().nullable(),
+  is_pinned: z.boolean().optional().nullable(),
   codeFile: CodeFileSchema.optional().nullable(),
   codeFolder: z.lazy(() => CodeFolderSchema).optional().nullable(),
   codeProject: CodeProjectSchema.optional().nullable(),

@@ -10,6 +10,7 @@ export interface Article {
   publishedAt: string | null
   readingTime: number // in minutes
   featured?: boolean | null
+  is_pinned?: boolean | null
   codeFile?: CodeFile | null
   codeFolder?: CodeFolder | null
   codeProject?: CodeProject | null

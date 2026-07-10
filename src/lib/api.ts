@@ -69,6 +69,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
     tags: ["typescript", "php", "api", "validation"],
     publishedAt: "2026-05-28",
     readingTime: 5,
+    is_pinned: true,
   },
   {
     id: "01H7B3Q9N8472M6YV6N7R0G5Y2",
@@ -87,6 +88,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     tags: ["css", "animation", "browser", "ux"],
     publishedAt: "2026-05-14",
     readingTime: 4,
+    is_pinned: true,
   },
   {
     id: "01H7B3Q9N8472M6YV6N7R0G5Y3",
@@ -780,8 +782,9 @@ export async function getArticles(params?: {
   tag?: string;
   page?: number;
   pageSize?: number;
+  is_pinned?: boolean;
 }): Promise<PaginatedArticles> {
-  const { category, tag, page = 1, pageSize = 10 } = params ?? {};
+  const { category, tag, page = 1, pageSize = 10, is_pinned } = params ?? {};
   
   const searchParams = new URLSearchParams({
     page: String(page),
@@ -789,6 +792,7 @@ export async function getArticles(params?: {
   });
   if (category && category !== "all") searchParams.append("category", category);
   if (tag) searchParams.append("tag", tag);
+  if (is_pinned !== undefined) searchParams.append("is_pinned", String(is_pinned));
 
   let filtered = [...MOCK_ARTICLES];
   if (category && category !== "all") {
@@ -796,6 +800,12 @@ export async function getArticles(params?: {
   }
   if (tag) {
     filtered = filtered.filter((a) => a.tags.includes(tag));
+  }
+  if (is_pinned !== undefined) {
+    filtered = filtered.filter((a) => {
+      const pinVal = !!a.is_pinned;
+      return pinVal === is_pinned;
+    });
   }
   const start = (page - 1) * pageSize;
   const mockFallback: PaginatedArticles = {
