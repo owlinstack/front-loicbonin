@@ -200,7 +200,8 @@ export function Header() {
           borderBottom: '1px solid var(--color-border)',
           zIndex: 99,
           transform: drawerOpen ? 'translateY(0)' : 'translateY(-100%)',
-          transition: 'transform 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+          visibility: drawerOpen ? 'visible' : 'hidden',
+          transition: 'transform 250ms cubic-bezier(0.4, 0, 0.2, 1), visibility 250ms',
           padding: '24px 24px 32px',
           display: 'flex',
           flexDirection: 'column',
@@ -228,26 +229,27 @@ export function Header() {
 
         <button
           onClick={toggleMinified}
-          aria-label="Minifier le menu"
+          aria-label="Activer le mode compact"
           style={{
-            background: 'transparent',
-            border: 'none',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 20,
             cursor: 'pointer',
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-sans)',
             fontSize: 'var(--text-xs)',
-            color: 'var(--color-text-muted)',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            display: 'flex',
+            color: 'var(--color-text)',
+            padding: '8px 16px',
+            display: 'inline-flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 8,
-            padding: '16px 0 0',
-            borderTop: '1px solid var(--color-border)',
-            width: '100%',
+            width: 'fit-content',
+            margin: '12px auto 0',
+            transition: 'background 150ms, border-color 150ms',
           }}
         >
-          <Unlock size={16} />
-          <span>Minifier le menu</span>
+          <Unlock size={14} style={{ color: 'var(--color-teal)' }} />
+          <span style={{ fontWeight: 500 }}>Menu Compact (icônes)</span>
         </button>
       </nav>
 
