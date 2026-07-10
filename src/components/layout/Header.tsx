@@ -45,6 +45,7 @@ export function Header() {
   return (
     <>
       <header
+        className={mounted && isMinified ? 'header-minified' : ''}
         style={{
           position: 'sticky',
           top: 0,
@@ -64,7 +65,6 @@ export function Header() {
         <Link
           href="/"
           aria-label="Loïc Bonin — accueil"
-          className={`header-logo ${mounted && isMinified ? 'hide-on-mobile' : ''}`}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -77,53 +77,36 @@ export function Header() {
             color: 'var(--color-text)',
           }}
         >
-          Loïc Bonin
+          <span className="logo-full">Loïc Bonin</span>
+          <span className="logo-short">LB</span>
         </Link>
 
         {/* Minified Mobile Nav Row */}
-        {mounted && isMinified && (
-          <nav
-            className="minified-mobile-nav"
-            style={{
-              display: 'none',
-              alignItems: 'center',
-              gap: 20,
-            }}
-          >
-            <button
-              onClick={toggleMinified}
-              aria-label="Déverrouiller le menu"
+        <nav
+          className="minified-mobile-nav"
+          style={{
+            display: 'none',
+            alignItems: 'center',
+            gap: 16,
+          }}
+        >
+          {NAV_LINKS.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-label={label}
               style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--color-teal)',
-                padding: 4,
+                color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
+                padding: '6px 4px',
                 display: 'flex',
                 alignItems: 'center',
+                transition: 'color 150ms',
               }}
             >
-              <Lock size={18} />
-            </button>
-
-            {NAV_LINKS.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                aria-label={label}
-                style={{
-                  color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
-                  padding: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  transition: 'color 150ms',
-                }}
-              >
-                <Icon size={18} />
-              </Link>
-            ))}
-          </nav>
-        )}
+              <Icon size={18} />
+            </Link>
+          ))}
+        </nav>
 
         {/* Desktop nav — centered absolutely so logo/actions don't fight */}
         <nav
@@ -152,12 +135,31 @@ export function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
           <ThemeToggle />
 
+          {/* Minify Unlock Toggle Button - replaces Hamburger on mobile when minified */}
+          <button
+            onClick={toggleMinified}
+            aria-label="Déverrouiller le menu"
+            className="minify-unlock-btn"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-teal)',
+              padding: 6,
+              display: 'none',
+              alignItems: 'center',
+              transition: 'color 150ms',
+            }}
+          >
+            <Lock size={18} />
+          </button>
+
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setDrawerOpen(!drawerOpen)}
             aria-label={drawerOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={drawerOpen}
-            className={`hamburger-btn ${drawerOpen ? 'open' : ''} ${mounted && isMinified ? 'hide-on-mobile' : ''}`}
+            className={`hamburger-btn ${drawerOpen ? 'open' : ''}`}
             style={{
               background: 'transparent',
               border: 'none',
@@ -251,6 +253,11 @@ export function Header() {
 
       <style>{`
         .header-nav    { display: flex; }
+        .logo-short    { display: none; }
+        .logo-full     { display: inline; }
+        .minified-mobile-nav { display: none; }
+        .minify-unlock-btn   { display: none; }
+
         .hamburger-btn {
           display: none !important;
           flex-direction: column;
@@ -278,12 +285,27 @@ export function Header() {
           .header-nav    { display: none !important; }
           .hamburger-btn { display: flex !important; }
           
-          .minified-mobile-nav {
-            display: flex !important;
-          }
-          .hide-on-mobile {
+          /* Header minified styles on mobile */
+          .header-minified .logo-full {
             display: none !important;
           }
+          .header-minified .logo-short {
+            display: inline !important;
+          }
+          .header-minified .minified-mobile-nav {
+            display: flex !important;
+            opacity: 0;
+            animation: fadeIn 0.2s ease forwards;
+          }
+          .header-minified .minify-unlock-btn {
+            display: flex !important;
+          }
+          .header-minified .hamburger-btn {
+            display: none !important;
+          }
+        }
+        @keyframes fadeIn {
+          to { opacity: 1; }
         }
       `}</style>
     </>
