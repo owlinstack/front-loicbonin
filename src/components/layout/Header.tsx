@@ -90,20 +90,17 @@ export function Header() {
             onClick={() => setDrawerOpen(!drawerOpen)}
             aria-label={drawerOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={drawerOpen}
-            className="hamburger-btn"
+            className={`hamburger-btn ${drawerOpen ? 'open' : ''}`}
             style={{
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              flexDirection: 'column',
-              gap: 5,
-              padding: 8,
               color: 'var(--color-text)',
             }}
           >
-            <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 1 }} />
-            <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 1 }} />
-            <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 1 }} />
+            <span />
+            <span />
+            <span />
           </button>
         </div>
       </header>
@@ -161,7 +158,29 @@ export function Header() {
 
       <style>{`
         .header-nav    { display: flex; }
-        .hamburger-btn { display: none !important; }
+        .hamburger-btn {
+          display: none !important;
+          flex-direction: column;
+          gap: 5px;
+          padding: 8px;
+        }
+        .hamburger-btn span {
+          display: block;
+          width: 20px;
+          height: 2px;
+          background-color: currentColor;
+          border-radius: 1px;
+          transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .hamburger-btn.open span:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+        }
+        .hamburger-btn.open span:nth-child(2) {
+          opacity: 0;
+        }
+        .hamburger-btn.open span:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+        }
         @media (max-width: 768px) {
           .header-nav    { display: none !important; }
           .hamburger-btn { display: flex !important; }
