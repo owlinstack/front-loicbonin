@@ -87,8 +87,8 @@ export function Header() {
 
           {/* Hamburger — mobile only */}
           <button
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Ouvrir le menu"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+            aria-label={drawerOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={drawerOpen}
             className="hamburger-btn"
             style={{
@@ -117,73 +117,46 @@ export function Header() {
             position: 'fixed',
             inset: 0,
             background: 'rgba(0,0,0,0.5)',
-            zIndex: 199,
+            zIndex: 98,
           }}
         />
       )}
 
-      {/* Mobile drawer */}
+      {/* Mobile menu */}
       <nav
         aria-label="Menu mobile"
         style={{
           position: 'fixed',
-          inset: '0 auto 0 0',
-          width: 280,
+          top: 56,
+          left: 0,
+          right: 0,
           backgroundColor: 'var(--color-bg)',
-          borderRight: '1px solid var(--color-border)',
-          zIndex: 200,
-          transform: drawerOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 300ms ease',
-          padding: '24px 20px',
-          overflowY: 'auto',
+          borderBottom: '1px solid var(--color-border)',
+          zIndex: 99,
+          transform: drawerOpen ? 'translateY(0)' : 'translateY(-100%)',
+          transition: 'transform 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+          padding: '24px 24px 32px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 24,
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-          <span
+        {NAV_LINKS.map(({ href, label }) => (
+          <Link
+            key={href}
+            href={href}
+            onClick={() => setDrawerOpen(false)}
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: 'var(--text-lg)',
-              fontWeight: 600,
-              letterSpacing: '-0.02em',
-              color: 'var(--color-text)',
+              color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
+              transition: 'color 150ms',
+              textDecoration: 'none',
             }}
           >
-            Loïc Bonin
-          </span>
-          <button
-            onClick={() => setDrawerOpen(false)}
-            aria-label="Fermer le menu"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-muted)',
-              fontSize: 24,
-              lineHeight: 1,
-              padding: 4,
-            }}
-          >
-            ×
-          </button>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-          {NAV_LINKS.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setDrawerOpen(false)}
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: 'var(--text-lg)',
-                color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
-                transition: 'color 150ms',
-                textDecoration: 'none',
-              }}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
+            {label}
+          </Link>
+        ))}
       </nav>
 
       <style>{`
