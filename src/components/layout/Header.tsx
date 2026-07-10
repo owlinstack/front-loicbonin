@@ -2,19 +2,39 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Lock, Unlock, Newspaper, Briefcase, Code2, User } from 'lucide-react'
 
 const NAV_LINKS = [
-  { href: '/', label: 'Veille' },
-  { href: '/realisations', label: 'Réalisations' },
-  { href: '/code', label: 'Code' },
-  { href: '/profil', label: 'Profil' },
+  { href: '/', label: 'Veille', icon: Newspaper },
+  { href: '/realisations', label: 'Réalisations', icon: Briefcase },
+  { href: '/code', label: 'Code', icon: Code2 },
+  { href: '/profil', label: 'Profil', icon: User },
 ]
 
 export function Header() {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [isMinified, setIsMinified] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true)
+      const stored = localStorage.getItem('nav_minified')
+      if (stored === 'true') {
+        setIsMinified(true)
+      }
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const toggleMinified = () => {
+    const nextVal = !isMinified
+    setIsMinified(nextVal)
+    localStorage.setItem('nav_minified', String(nextVal))
+  }
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
@@ -43,6 +63,7 @@ export function Header() {
         <Link
           href="/"
           aria-label="Loïc Bonin — accueil"
+          className={`header-logo ${mounted && isMinified ? 'hide-on-mobile' : ''}`}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -57,6 +78,51 @@ export function Header() {
         >
           Loïc Bonin
         </Link>
+
+        {/* Minified Mobile Nav Row */}
+        {mounted && isMinified && (
+          <nav
+            className="minified-mobile-nav"
+            style={{
+              display: 'none',
+              alignItems: 'center',
+              gap: 20,
+            }}
+          >
+            <button
+              onClick={toggleMinified}
+              aria-label="Déverrouiller le menu"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--color-teal)',
+                padding: 4,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Lock size={18} />
+            </button>
+
+            {NAV_LINKS.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-label={label}
+                style={{
+                  color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
+                  padding: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'color 150ms',
+                }}
+              >
+                <Icon size={18} />
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* Desktop nav — centered absolutely so logo/actions don't fight */}
         <nav
@@ -82,15 +148,36 @@ export function Header() {
         </nav>
 
         {/* Right actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
           <ThemeToggle />
+
+          {/* Minify Toggle Button */}
+          <button
+            onClick={toggleMinified}
+            aria-label="Minifier le menu"
+            className={`minify-toggle-btn ${mounted && isMinified ? 'hide-on-mobile' : ''}`}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-text-muted)',
+              padding: 6,
+              display: 'none',
+              alignItems: 'center',
+              transition: 'color 150ms',
+            }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text)')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)')}
+          >
+            <Unlock size={18} />
+          </button>
 
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setDrawerOpen(!drawerOpen)}
             aria-label={drawerOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={drawerOpen}
-            className={`hamburger-btn ${drawerOpen ? 'open' : ''}`}
+            className={`hamburger-btn ${drawerOpen ? 'open' : ''} ${mounted && isMinified ? 'hide-on-mobile' : ''}`}
             style={{
               background: 'transparent',
               border: 'none',
@@ -184,6 +271,14 @@ export function Header() {
         @media (max-width: 768px) {
           .header-nav    { display: none !important; }
           .hamburger-btn { display: flex !important; }
+          .minify-toggle-btn { display: flex !important; }
+          
+          .minified-mobile-nav {
+            display: flex !important;
+          }
+          .hide-on-mobile {
+            display: none !important;
+          }
         }
       `}</style>
     </>
