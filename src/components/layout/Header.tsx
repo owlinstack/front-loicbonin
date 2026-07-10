@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Lock, Unlock, Newspaper, Briefcase, Code2, User } from 'lucide-react'
 
@@ -16,19 +16,10 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [isMinified, setIsMinified] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true)
-      const stored = localStorage.getItem('nav_minified')
-      if (stored === 'true') {
-        setIsMinified(true)
-      }
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [])
+  const [isMinified, setIsMinified] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem('nav_minified') === 'true'
+  })
 
   const toggleMinified = () => {
     const nextVal = !isMinified
@@ -45,7 +36,8 @@ export function Header() {
   return (
     <>
       <header
-        className={mounted && isMinified ? 'header-minified' : ''}
+        className={isMinified ? 'header-minified' : ''}
+        suppressHydrationWarning
         style={{
           position: 'sticky',
           top: 0,
