@@ -97,7 +97,7 @@ export const ArticleSchema = z.object({
   title: z.string(),
   excerpt: z.string(),
   content: z.string(),
-  category: z.string(),
+  category: z.string().nullable().optional(),
   categories: z.array(z.string()).optional(),
   tags: z.array(z.string()),
   publishedAt: DateStringSchema.nullable(),

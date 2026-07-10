@@ -4,7 +4,7 @@ export interface Article {
   title: string
   excerpt: string
   content: string
-  category: string
+  category?: string | null
   categories?: string[]
   tags: string[]
   publishedAt: string | null

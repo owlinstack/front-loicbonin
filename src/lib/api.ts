@@ -751,7 +751,10 @@ function validateData<T>(
 
 // ── API functions ──────────────────────────────────────────────────
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const BASE_URL =
+  (typeof window === 'undefined' ? process.env.API_URL : undefined) ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:8000/api/v1';
 
 async function fetchFromAPI<T>(path: string, schema: z.ZodType<T>, fallbackData: T): Promise<T> {
   try {
@@ -763,7 +766,11 @@ async function fetchFromAPI<T>(path: string, schema: z.ZodType<T>, fallbackData:
     const rawData = data.data ?? data;
     return validateData(schema, rawData, path);
   } catch (err) {
-    console.warn(`[API Fallback] Fetch failed for ${path}, using local mocks:`, err);
+    console.warn(`[API Fallback] Fetch failed for ${path}:`, err);
+    if (process.env.NODE_ENV === 'production' && process.env.API_URL) {
+      throw new Error(`API fetch failed for ${path}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    console.warn(`[API Fallback] Falling back to local mocks for ${path}`);
     return validateData(schema, fallbackData, `${path} (Mock)`);
   }
 }
