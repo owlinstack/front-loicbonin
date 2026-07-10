@@ -98,15 +98,7 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
     <>
       {/* ── Phase A: Grille des Projets ── */}
       {phase === 'projects' && (
-        <main
-          style={{
-            flex: 1,
-            padding: '40px 32px 64px',
-            maxWidth: 1280,
-            width: '100%',
-            margin: '0 auto',
-          }}
-        >
+        <main className="code-explorer-main">
           {/* Page header */}
           <div
             style={{
@@ -284,6 +276,13 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
       )}
 
       <style>{`
+        .code-explorer-main {
+          flex: 1;
+          padding: 40px 32px 64px;
+          max-width: 1280px;
+          width: 100%;
+          margin: 0 auto;
+        }
         .code-editor-sidebar {
           width: 220px;
           flex-shrink: 0;
@@ -305,6 +304,11 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
         }
         @media (max-width: 768px) {
           .code-editor-sidebar { display: none; }
+        }
+        @media (max-width: 640px) {
+          .code-explorer-main {
+            padding: 24px 16px 48px;
+          }
         }
       `}</style>
     </>

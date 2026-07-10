@@ -34,6 +34,7 @@ export function Header() {
     const nextVal = !isMinified
     setIsMinified(nextVal)
     localStorage.setItem('nav_minified', String(nextVal))
+    setDrawerOpen(false)
   }
 
   const isActive = (href: string) => {
@@ -151,27 +152,6 @@ export function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
           <ThemeToggle />
 
-          {/* Minify Toggle Button */}
-          <button
-            onClick={toggleMinified}
-            aria-label="Minifier le menu"
-            className={`minify-toggle-btn ${mounted && isMinified ? 'hide-on-mobile' : ''}`}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-muted)',
-              padding: 6,
-              display: 'none',
-              alignItems: 'center',
-              transition: 'color 150ms',
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text)')}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)')}
-          >
-            <Unlock size={18} />
-          </button>
-
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setDrawerOpen(!drawerOpen)}
@@ -225,22 +205,48 @@ export function Header() {
           gap: 24,
         }}
       >
-        {NAV_LINKS.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            onClick={() => setDrawerOpen(false)}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: 'var(--text-lg)',
-              color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
-              transition: 'color 150ms',
-              textDecoration: 'none',
-            }}
-          >
-            {label}
-          </Link>
-        ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => setDrawerOpen(false)}
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'var(--text-lg)',
+                color: isActive(href) ? 'var(--color-text)' : 'var(--color-text-muted)',
+                transition: 'color 150ms',
+                textDecoration: 'none',
+              }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        <button
+          onClick={toggleMinified}
+          aria-label="Minifier le menu"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-muted)',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '16px 0 0',
+            borderTop: '1px solid var(--color-border)',
+            width: '100%',
+          }}
+        >
+          <Unlock size={16} />
+          <span>Minifier le menu</span>
+        </button>
       </nav>
 
       <style>{`
@@ -271,7 +277,6 @@ export function Header() {
         @media (max-width: 768px) {
           .header-nav    { display: none !important; }
           .hamburger-btn { display: flex !important; }
-          .minify-toggle-btn { display: flex !important; }
           
           .minified-mobile-nav {
             display: flex !important;
