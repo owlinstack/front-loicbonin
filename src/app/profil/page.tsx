@@ -49,21 +49,14 @@ export default async function ProfilPage() {
         }}
       >
         {/* Hero name & Avatar */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 24,
-            marginBottom: 40,
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="profile-hero">
           {profile.avatarUrl && (
             <Image
               src={profile.avatarUrl}
               alt={profile.name}
               width={200}
               height={200}
+              className="profile-avatar"
               style={{
                 borderRadius: "50%",
                 objectFit: "cover",
@@ -74,17 +67,7 @@ export default async function ProfilPage() {
             />
           )}
 
-          <h1
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "var(--text-hero)",
-              fontWeight: 400,
-              color: "var(--color-text)",
-              lineHeight: 1.0,
-              margin: 0,
-              letterSpacing: "-0.02em",
-            }}
-          >
+          <h1 className="profile-name">
             {profile.name}
           </h1>
         </div>
@@ -331,6 +314,31 @@ export default async function ProfilPage() {
       <Footer />
 
       <style>{`
+        .profile-hero {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          margin-bottom: 40px;
+          flex-wrap: wrap;
+        }
+        .profile-name {
+          font-family: var(--font-display);
+          font-size: var(--text-hero);
+          font-weight: 400;
+          color: var(--color-text);
+          line-height: 1.0;
+          margin: 0;
+          letter-spacing: -0.02em;
+        }
+        @media (max-width: 640px) {
+          .profile-hero {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+          }
+        }
         .cv-link {
           font-family: var(--font-mono);
           font-size: var(--text-sm);

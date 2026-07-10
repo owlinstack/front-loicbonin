@@ -60,24 +60,42 @@ export function HighlightedCode({
                   {idx + 1}
                 </td>
               )}
-              <td style={{ paddingLeft: lineNumbers ? 0 : undefined, whiteSpace: 'pre' }}>
+              <td
+                className="code-cell"
+                style={{ paddingLeft: lineNumbers ? 0 : undefined }}
+              >
                 {lineTokens.length === 0 ? (
-                  <span>&nbsp;</span>
-                ) : (
-                  lineTokens.map((tok, ti) => (
-                    <span
-                      key={ti}
-                      style={{ color: tokenColor(tok.type, theme) }}
-                    >
-                      {tok.value}
-                    </span>
-                  ))
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                   <span>&nbsp;</span>
+                 ) : (
+                   lineTokens.map((tok, ti) => (
+                     <span
+                       key={ti}
+                       style={{ color: tokenColor(tok.type, theme) }}
+                     >
+                       {tok.value}
+                     </span>
+                   ))
+                 )}
+               </td>
+             </tr>
+           ))}
+         </tbody>
+       </table>
+
+      <style>{`
+        .code-cell {
+          white-space: pre;
+          word-break: normal;
+          overflow-wrap: normal;
+        }
+        @media (max-width: 640px) {
+          .code-cell {
+            white-space: pre-wrap !important;
+            word-break: break-all !important;
+            overflow-wrap: break-word !important;
+          }
+        }
+      `}</style>
 
       {truncated && (
         <div

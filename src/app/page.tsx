@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Aside } from "@/components/layout/Aside";
 import { ArticleGrid } from "@/components/article/ArticleGrid";
+import { PinnedArticles } from "@/components/article/PinnedArticles";
 import { getArticles, getCategories, getTags } from "@/lib/api";
 
 interface HomePageProps {
@@ -22,16 +23,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const categoriesData = await getCategories();
   const tagsData = await getTags();
   
-  // We load all articles up to the current page on the server so "Load More" appends them
+  const isBrowsingAll = pageNum === 1 && !activeTag && activeCategory === "all";
+
+  // Charger les articles épinglés sur la page principale
+  let pinnedArticles: any[] = [];
+  if (isBrowsingAll) {
+    const pinnedArticlesData = await getArticles({
+      page: 1,
+      pageSize: 10,
+      is_pinned: true,
+    });
+    pinnedArticles = pinnedArticlesData.articles;
+  }
+
+  // Charger le flux normal (exclut les épinglés sur l'accueil principale)
   const articlesData = await getArticles({
     category: activeCategory,
     tag: activeTag,
     page: 1,
     pageSize: pageNum * 10,
+    is_pinned: isBrowsingAll ? false : undefined,
   });
 
   const articles = articlesData.articles;
-  const isBrowsingAll = pageNum === 1 && !activeTag && activeCategory === "all";
   const featuredArticle = isBrowsingAll
     ? (articles.find((a) => a.featured) ?? articles[0] ?? null)
     : null;
@@ -58,6 +72,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         {/* Article list — center column */}
         <div style={{ flex: 1, minWidth: 0, maxWidth: 680, margin: '0 auto' }}>
+          {isBrowsingAll && pinnedArticles.length > 0 && (
+            <PinnedArticles articles={pinnedArticles} />
+          )}
           <ArticleGrid
             featuredArticle={featuredArticle}
             listArticles={listArticles}
