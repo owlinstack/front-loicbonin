@@ -767,7 +767,7 @@ async function fetchFromAPI<T>(path: string, schema: z.ZodType<T>, fallbackData:
     return validateData(schema, rawData, path);
   } catch (err) {
     console.warn(`[API Fallback] Fetch failed for ${path}:`, err);
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && process.env.API_URL) {
       throw new Error(`API fetch failed for ${path}: ${err instanceof Error ? err.message : String(err)}`);
     }
     console.warn(`[API Fallback] Falling back to local mocks for ${path}`);
