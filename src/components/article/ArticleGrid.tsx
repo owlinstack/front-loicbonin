@@ -29,7 +29,6 @@ export function ArticleGrid({
   const [hasMoreState, setHasMoreState] = useState<boolean>(hasMore)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const observerRef = useRef<IntersectionObserver | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
   const loadNextPage = useCallback(async () => {
@@ -69,7 +68,7 @@ export function ArticleGrid({
   useEffect(() => {
     if (!hasMoreState) return
 
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           loadNextPage()
@@ -78,14 +77,13 @@ export function ArticleGrid({
       { threshold: 0.1, rootMargin: '100px' }
     )
 
-    if (loadMoreRef.current) {
-      observerRef.current.observe(loadMoreRef.current)
+    const currentRef = loadMoreRef.current
+    if (currentRef) {
+      observer.observe(currentRef)
     }
 
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
+      observer.disconnect()
     }
   }, [hasMoreState, loadNextPage])
 
