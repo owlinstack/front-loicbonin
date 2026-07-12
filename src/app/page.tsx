@@ -76,6 +76,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <PinnedArticles articles={pinnedArticles} />
           )}
           <ArticleGrid
+            key={`${activeCategory}-${activeTag}`}
             featuredArticle={featuredArticle}
             listArticles={listArticles}
             hasMore={hasMore}
