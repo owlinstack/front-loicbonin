@@ -38,6 +38,16 @@ export const CodeProjectSchema = z.object({
   description: z.string().optional().nullable(),
 });
 
+export const GithubProjectSchema = z.object({
+  id: ULIDSchema,
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().optional().nullable(),
+  githubUrl: z.string(),
+  status: z.string().optional().nullable(),
+  sortOrder: z.number().optional().nullable(),
+});
+
 export const CodeFileSchema = z.object({
   name: z.string(),
   path: z.string(),

@@ -5,11 +5,13 @@ import { useSearchParams } from 'next/navigation'
 import { FileTree } from '@/components/code/FileTree'
 import { CodeViewer } from '@/components/code/CodeViewer'
 import { ProjectGrid } from '@/components/code/ProjectGrid'
+import { GithubProjectGrid } from '@/components/code/GithubProjectGrid'
 import { getCodeProjectTree } from '@/lib/api'
-import type { CodeFile, CodeTree, CodeProject } from '@/lib/types'
+import type { CodeFile, CodeTree, CodeProject, GithubProject } from '@/lib/types'
 
 interface CodeEditorClientProps {
   projects: CodeProject[]
+  githubProjects?: GithubProject[]
 }
 
 function flattenFiles(tree: CodeTree): CodeFile[] {
@@ -21,7 +23,7 @@ function flattenFiles(tree: CodeTree): CodeFile[] {
   return files
 }
 
-export function CodeEditorClient({ projects }: CodeEditorClientProps) {
+export function CodeEditorClient({ projects, githubProjects = [] }: CodeEditorClientProps) {
   const [phase, setPhase]           = useState<'projects' | 'editor'>('projects')
   const [activeProject, setActiveProject] = useState<CodeProject | null>(null)
   const [activeTree, setActiveTree] = useState<CodeTree>([])
@@ -154,7 +156,45 @@ export function CodeEditorClient({ projects }: CodeEditorClientProps) {
               </p>
             </div>
           ) : (
-            <ProjectGrid projects={projects} onSelect={handleSelectProject} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
+              {/* Section 1: Projets de Code Interactifs */}
+              <div>
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-xs)',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-text-muted)',
+                    marginBottom: 16,
+                    opacity: 0.8,
+                  }}
+                >
+                  Projets avec Explorateur
+                </h2>
+                <ProjectGrid projects={projects} onSelect={handleSelectProject} />
+              </div>
+
+              {/* Section 2: Projets GitHub */}
+              {githubProjects.length > 0 && (
+                <div>
+                  <h2
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--text-xs)',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: 'var(--color-text-muted)',
+                      marginBottom: 16,
+                      opacity: 0.8,
+                    }}
+                  >
+                    Dépôts GitHub
+                  </h2>
+                  <GithubProjectGrid projects={githubProjects} />
+                </div>
+              )}
+            </div>
           )}
         </main>
       )}

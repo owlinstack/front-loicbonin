@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
-import { getCodeProjects } from "@/lib/api";
+import { getCodeProjects, getGithubProjects } from "@/lib/api";
 import { CodeEditorClient } from "@/components/code/CodeEditorClient";
 
 export const metadata: Metadata = {
   title: "Explorateur de Code",
   description:
-    "Explorez les ressources disponibles en lignes de code des articles ou des projets.",
+    "Explorez les ressources disponibles en lignes de code des articles ou des projets et découvrez mes répertoires GitHub.",
   alternates: {
     canonical: "/code",
   },
 };
 
 export default async function CodePage() {
-  const projects = await getCodeProjects();
+  const [projects, githubProjects] = await Promise.all([
+    getCodeProjects(),
+    getGithubProjects(),
+  ]);
 
   return (
     <div
@@ -40,7 +43,7 @@ export default async function CodePage() {
           </div>
         }
       >
-        <CodeEditorClient projects={projects} />
+        <CodeEditorClient projects={projects} githubProjects={githubProjects} />
       </Suspense>
     </div>
   );

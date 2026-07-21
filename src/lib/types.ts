@@ -94,3 +94,14 @@ export interface CodeProject {
   description?: string | null
 }
 
+export interface GithubProject {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  githubUrl: string
+  status?: string | null
+  sortOrder?: number | null
+}
+
+

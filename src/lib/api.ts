@@ -8,6 +8,7 @@ import type {
   Project,
   Tag,
   CodeProject,
+  GithubProject,
 } from "./types";
 import { z } from "zod";
 import {
@@ -19,6 +20,7 @@ import {
   ProfileSchema,
   PaginatedArticlesSchema,
   CodeProjectSchema,
+  GithubProjectSchema,
 } from "./validation";
 
 // Simplification: Mock de données en mémoire.
@@ -217,6 +219,18 @@ const MOCK_CODE_PROJECTS: CodeProject[] = [
     name: "Filament Core Project",
     slug: "filament-core-project",
     description: "Un projet regroupant toute l'architecture de base de nos panels d'administration.",
+  },
+];
+
+const MOCK_GITHUB_PROJECTS: GithubProject[] = [
+  {
+    id: "01ARZ3NDEKTSV4RRFFQ69G5FGH",
+    name: "loicbonin.com",
+    slug: "loicbonin-com",
+    description: "Code source du portfolio complet (API Laravel & Front-end Next.js).",
+    githubUrl: "https://github.com/loicbonin/loicbonin.com",
+    status: "published",
+    sortOrder: 1,
   },
 ];
 
@@ -769,7 +783,7 @@ async function fetchFromAPI<T>(path: string, schema: z.ZodType<T>, fallbackData:
     return validateData(schema, rawData, path);
   } catch (err) {
     console.warn(`[API Fallback] Fetch failed for ${path}:`, err);
-    if (process.env.NODE_ENV === 'production' && process.env.API_URL) {
+    if (process.env.NODE_ENV === 'production' && process.env.API_URL && !process.env.API_URL.includes('localhost')) {
       throw new Error(`API fetch failed for ${path}: ${err instanceof Error ? err.message : String(err)}`);
     }
     console.warn(`[API Fallback] Falling back to local mocks for ${path}`);
@@ -859,6 +873,14 @@ export async function getCodeProjects(): Promise<CodeProject[]> {
     '/code/projects',
     z.array(CodeProjectSchema),
     MOCK_CODE_PROJECTS
+  );
+}
+
+export async function getGithubProjects(): Promise<GithubProject[]> {
+  return fetchFromAPI<GithubProject[]>(
+    '/github-projects',
+    z.array(GithubProjectSchema),
+    MOCK_GITHUB_PROJECTS
   );
 }
 
