@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { Bot, X, Send, ExternalLink, Loader2, Mic, MicOff, Volume2, MessageSquare } from 'lucide-react';
 
 interface Citation {
@@ -15,6 +16,21 @@ interface Message {
   sender: 'user' | 'bot';
   text: string;
   citations?: Citation[];
+}
+
+function getArticleHref(citation: Citation): string {
+  if (citation.article_id) {
+    return `/article/${citation.article_id}`;
+  }
+  if (citation.url) {
+    try {
+      const urlObj = new URL(citation.url, 'http://localhost');
+      return urlObj.pathname;
+    } catch {
+      return citation.url;
+    }
+  }
+  return '#';
 }
 
 export function BlogRagChatWidget() {
@@ -440,9 +456,9 @@ export function BlogRagChatWidget() {
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                         {msg.citations.map((c, i) => (
-                          <a
+                          <Link
                             key={i}
-                            href={c.url || `/article/${c.article_id}`}
+                            href={getArticleHref(c)}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -472,7 +488,7 @@ export function BlogRagChatWidget() {
                               {c.title}
                             </span>
                             <ExternalLink size={13} style={{ color: 'var(--color-teal)', flexShrink: 0 }} />
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
