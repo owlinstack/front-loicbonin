@@ -76,6 +76,7 @@ export interface Profile {
   education: ProfileEducation[] | null
   cvUrl?: string | null
   avatarUrl?: string | null
+  ragChatEnabled?: boolean | null
 }
 
 export interface PaginatedArticles {

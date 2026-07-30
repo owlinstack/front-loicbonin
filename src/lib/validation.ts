@@ -99,6 +99,7 @@ export const ProfileSchema = z.object({
   education: z.array(ProfileEducationSchema).nullable(),
   cvUrl: z.string().optional().nullable(),
   avatarUrl: z.string().optional().nullable(),
+  ragChatEnabled: z.boolean().optional().nullable(),
 });
 
 export const ArticleSchema = z.object({

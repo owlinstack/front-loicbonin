@@ -744,6 +744,7 @@ const MOCK_PROFILE: Profile = {
     },
   ],
   cvUrl: "/cv-loic-bonin.pdf",
+  ragChatEnabled: false,
 };
 
 // Helper to perform strict validation at the network boundary

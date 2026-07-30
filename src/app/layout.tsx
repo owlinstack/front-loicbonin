@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { BlogRagChatWidget } from "@/components/chat/BlogRagChatWidget";
+import { getProfile } from "@/lib/api";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://loicbonin.com'),
@@ -21,11 +23,13 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const profile = await getProfile();
+
   return (
     <html lang="fr" data-theme="dark" suppressHydrationWarning>
       <head>
@@ -52,7 +56,9 @@ export default function RootLayout({
           }}
         />
         {children}
+        {profile.ragChatEnabled && <BlogRagChatWidget />}
       </body>
     </html>
   );
 }
+
