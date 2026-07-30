@@ -19,18 +19,79 @@ interface Message {
 }
 
 function getArticleHref(citation: Citation): string {
+  let raw = '';
   if (citation.article_id) {
-    return `/article/${citation.article_id}`;
-  }
-  if (citation.url) {
+    raw = citation.article_id;
+  } else if (citation.url) {
     try {
       const urlObj = new URL(citation.url, 'http://localhost');
-      return urlObj.pathname;
+      raw = urlObj.pathname;
     } catch {
-      return citation.url;
+      raw = citation.url;
     }
   }
-  return '#';
+
+  const cleanRaw = raw.replace(/[.,;:!?]+$/, '');
+  const match = cleanRaw.match(/(?:^|\/article\/)([a-zA-Z0-9_-]+)$/);
+  if (match) {
+    return `/article/${match[1]}`;
+  }
+
+  return cleanRaw.startsWith('/') ? cleanRaw : `/article/${cleanRaw}`;
+}
+
+function renderFormattedText(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+|\/article\/[a-zA-Z0-9_-]+)/g;
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, index) => {
+    if (part.match(/^https?:\/\//) || part.match(/^\/article\//)) {
+      const cleanUrl = part.replace(/[.,;:!?]+$/, '');
+      const punctuation = part.slice(cleanUrl.length);
+
+      const articleMatch = cleanUrl.match(/\/article\/([a-zA-Z0-9_-]+)/);
+      if (articleMatch) {
+        const slug = articleMatch[1];
+        const href = `/article/${slug}`;
+        return (
+          <React.Fragment key={index}>
+            <Link
+              href={href}
+              style={{
+                color: 'var(--color-teal)',
+                textDecoration: 'underline',
+                textUnderlineOffset: '3px',
+                fontWeight: 500,
+              }}
+            >
+              {href}
+            </Link>
+            {punctuation}
+          </React.Fragment>
+        );
+      }
+
+      return (
+        <React.Fragment key={index}>
+          <a
+            href={cleanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'var(--color-teal)',
+              textDecoration: 'underline',
+              textUnderlineOffset: '3px',
+            }}
+          >
+            {cleanUrl}
+          </a>
+          {punctuation}
+        </React.Fragment>
+      );
+    }
+
+    return part;
+  });
 }
 
 export function BlogRagChatWidget() {
@@ -409,7 +470,7 @@ export function BlogRagChatWidget() {
                     color: 'var(--color-text)',
                   }}
                 >
-                  <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                  <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{renderFormattedText(msg.text)}</p>
 
                   {/* Bouton Synthèse Vocale (Play / Stop) */}
                   {msg.sender === 'bot' && msg.id !== 'welcome' && (
