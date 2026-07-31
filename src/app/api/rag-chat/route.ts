@@ -12,6 +12,10 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
+    const payload = {
+      ...body,
+      llm_provider: profile.ragLlmProvider || 'gemini',
+    };
     const ragServiceUrl = process.env.RAG_CHAT_INTERNAL_URL || 'http://localhost:3005';
 
     // Appels locaux avec token de test valide
@@ -21,7 +25,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer mock-token:local-visitor:execute:rag_chat'
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();
