@@ -77,7 +77,6 @@ export interface Profile {
   cvUrl?: string | null
   avatarUrl?: string | null
   ragChatEnabled?: boolean | null
-  ragLlmProvider?: string | null
 }
 
 export interface PaginatedArticles {

@@ -39,9 +39,25 @@ export function BlogRagChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
+  const [modelProvider, setModelProvider] = useState<'google' | 'local'>('google');
+
   useEffect(() => {
     if (isOpen) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading, isOpen]);
+
+  // Récupération dynamique du modèle/provider actif
+  useEffect(() => {
+    if (isOpen) {
+      fetch('/api/rag-chat')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.generation_provider === 'local' || data?.generation_provider === 'google') {
+            setModelProvider(data.generation_provider);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isOpen]);
 
   // Restauration de la session et du quota depuis localStorage
   useEffect(() => {
@@ -175,6 +191,10 @@ export function BlogRagChatWidget() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur de réponse');
+
+      if (data.provider === 'local' || data.provider === 'google') {
+        setModelProvider(data.provider);
+      }
 
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -317,7 +337,7 @@ export function BlogRagChatWidget() {
                       textTransform: 'uppercase',
                     }}
                   >
-                    Gemini 3.1
+                    {modelProvider === 'local' ? 'llm local' : 'gemini flash'}
                   </span>
                 </div>
                 <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-muted)', margin: 0 }}>
