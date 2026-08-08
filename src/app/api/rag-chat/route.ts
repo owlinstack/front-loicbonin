@@ -31,9 +31,12 @@ async function getIamToken(): Promise<string> {
   }
 
   const data = await res.json();
-  cachedToken = data.access_token;
-  tokenExpiresAt = now + (data.expires_in || 3600) * 1000 - 60000;
-  return cachedToken!;
+  cachedToken = data.token || data.access_token;
+  if (!cachedToken) {
+    throw new Error('IAM API token key missing in response payload');
+  }
+  tokenExpiresAt = now + (data.expires_in || 900) * 1000 - 60000;
+  return cachedToken;
 }
 
 export async function GET() {
