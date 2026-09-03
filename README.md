@@ -104,3 +104,4 @@ Pour approfondir le fonctionnement du projet, veuillez consulter les documents d
 2. [Architecture & Composants](./documentation/02-architecture.md) : Découpage Server/Client components et arborescence.
 3. [Conventions & Design System](./documentation/03-conventions.md) : Gestion de la dette technique ("ponytail"), thème sombre/clair et règles de style.
 4. [Intégration API & Zod](./documentation/04-api-integration.md) : Cache, sécurité réseau, gestion ISR et typage défensif.
+5. [Tests E2E (Playwright)](./documentation/05-e2e-testing.md) : Stratégie de tests End-to-End, Page Object Model et commandes.
